@@ -85,9 +85,9 @@ def val_significativa(val,cifras_sig, separador_decimales = '.'):
 
 
 def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
+    tabla= [[j for j in i] for i in tabla]
     new_tabla = []
     if type(cifras_sig) == list and len(cifras_sig) >= len(tabla):
-        print(1)
         cifras_sig = [int(cifras_sig[i]) for i in range(len(tabla))]
         for pos,lis in enumerate(tabla):
             new_tabla.append([])
@@ -123,8 +123,8 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
 
 def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimales = '.'):
     
-    tabla = acondicionar_tabla(leer_tabla(tabla), cifras_sig, separador_decimales)
-    columnas, datos = tabla.columns, tabla.values
+    tabla = leer_tabla(tabla), cifras_sig, separador_decimales
+    columnas, datos = tabla.columns, acondicionar_tabla(tabla.values)
 
     texto_tabla = '''
 \\begin{table}[H]
