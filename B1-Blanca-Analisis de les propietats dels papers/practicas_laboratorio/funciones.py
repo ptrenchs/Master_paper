@@ -143,7 +143,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
     texto_tabla += '\n\t\t\\\\\\hline\n'
 
     fila_def = ''
-    for i in trans(datos):
+    for i in datos:
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \n'
     texto_tabla += fila_def
