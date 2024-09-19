@@ -84,7 +84,7 @@ def val_significativa(val,cifras_sig, separador_decimales = '.'):
         return (val_sin_e + val_e).replace('.',separador_decimales)
 
 
-def replace_nan(tabla, cifras_sig = 3, separador_decimales = '.'):
+def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
     new_tabla = []
     if type(cifras_sig) == list and len(cifras_sig) >= len(tabla):
         print(1)
@@ -115,3 +115,35 @@ def replace_nan(tabla, cifras_sig = 3, separador_decimales = '.'):
                         new_tabla[-1].append(val)
 
     return new_tabla
+
+
+def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimales = '.'):
+    
+    tabla = acondicionar_tabla(leer_tabla(tabla), cifras_sig, separador_decimales)
+    columnas, datos = tabla.columns, tabla.values
+
+    texto_tabla = '''
+\\begin{table}[H]
+\t\\centering
+    '''
+    texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(round(float(1/len(columnas)),3))+'\\textwidth}'for i in columnas])+'|}'
+
+    texto_tabla += '''
+\t\t\\hline\n\t\t'''
+    col = []
+    for i in columnas:
+        col.append('\\multicolumn{1}{|c|}{\\textbf{'+ i +r'}}')
+
+    texto_tabla += ' & '.join(col)
+
+    texto_tabla += '\n\t\t\\\\\\hline\n'
+
+    fila_def = ''
+    for i in datos:
+        fila = [str(j) for j in i]
+        fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \n'
+    texto_tabla += fila_def
+    texto_tabla += '\t\t\\hline\n\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','-').replace('_','-') + '}\n\\end{table}'
+
+
+    print(texto_tabla)
