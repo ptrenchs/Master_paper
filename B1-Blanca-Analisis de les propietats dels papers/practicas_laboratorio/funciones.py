@@ -29,10 +29,10 @@ def leer_tabla(ruta):
             try:
                 val_str = str(val).replace(',','.')
                 new_val = float(val_str)
-                new_tabla[-1].append(float(new_val))
+                new_tabla[-1].append(new_val)
             except:
                 new_tabla[-1].append(val)
-    return pd.DataFrame(dict(zip(col,new_tabla)))
+    return pd.DataFrame(dict(zip(col,trans(new_tabla))))
 
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
     val_str = str(val).replace(',','.')
