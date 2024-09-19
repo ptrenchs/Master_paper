@@ -95,7 +95,9 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
                 try:
                     new_tabla[-1].append(val_significativa(val,cifras_sig[pos], separador_decimales))
                 except:
-                    if isnan(val):
+                    if type(val) == str:
+                        new_tabla[-1].append(val)
+                    elif isnan(val):
                         new_tabla[-1].append('')
                     else:
                         new_tabla[-1].append(val)
@@ -109,7 +111,9 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
                 try:
                     new_tabla[-1].append(val_significativa(val,cifras_sig, separador_decimales))
                 except:
-                    if isnan(val):
+                    if type(val) == str:
+                        new_tabla[-1].append(val)
+                    elif isnan(val):
                         new_tabla[-1].append('')
                     else:
                         new_tabla[-1].append(val)
