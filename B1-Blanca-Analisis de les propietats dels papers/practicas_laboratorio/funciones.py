@@ -163,7 +163,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
     return texto_tabla
 
 def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
-    nombres,tablas = leer_tabla(pd.read_excel(ruta))
+    nombres,tablas = leer_tabla(ruta)
     if type(cifras_sig) == list:
         if len(cifras_sig)<len(nombres):
             cifras_sig = [3 for i in nombres]
