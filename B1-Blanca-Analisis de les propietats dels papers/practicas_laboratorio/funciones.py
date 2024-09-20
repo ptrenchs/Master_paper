@@ -175,6 +175,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         return print('Error en el formato de cifras')
 
     for pos_tab,tabla in enumerate(tablas):
+        print(nombres[pos_tab])
         col = [i for i in tabla.columns]
         medias = []
         val_max = []
