@@ -237,6 +237,8 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         nombre_inicio = nombres[pos_tab] + ' inicio'
         # display(tabla)
         # display(tabla.values)
+        print([i for i in tabla.values])
+        print([i for i in tabla.columns])
         tabla_latex = pd.DataFrame(zip([i for i in tabla.columns], trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
         display(tabla_latex)
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
