@@ -29,18 +29,18 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
     
     if type(ruta) == pd.DataFrame:
         tabla = ruta
-    col = [i for i in tabla.columns]
-    new_tabla = []
-    for lis in tabla.values:
-        new_tabla.append([])
-        for val in lis:
-            try:
-                val_str = str(val).replace(',','.')
-                new_val = float(val_str)
-                new_tabla[-1].append(new_val)
-            except:
-                new_tabla[-1].append(val)
-    return [[nombre],[pd.DataFrame(dict(zip(col,trans(new_tabla))))]]
+        col = [i for i in tabla.columns]
+        new_tabla = []
+        for lis in tabla.values:
+            new_tabla.append([])
+            for val in lis:
+                try:
+                    val_str = str(val).replace(',','.')
+                    new_val = float(val_str)
+                    new_tabla[-1].append(new_val)
+                except:
+                    new_tabla[-1].append(val)
+        return [[nombre],[pd.DataFrame(dict(zip(col,trans(new_tabla))))]]
 
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
     val_str = str(val).replace(',','.')
