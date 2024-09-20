@@ -132,7 +132,8 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
 def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimales = '.'):
     
     _, tabla = leer_tabla(tabla)
-    display(tabla)
+    tabla = tabla[0]
+    # display(tabla)
     columnas, datos = tabla.columns, acondicionar_tabla(tabla.values, cifras_sig, separador_decimales)
 
     texto_tabla = '''
