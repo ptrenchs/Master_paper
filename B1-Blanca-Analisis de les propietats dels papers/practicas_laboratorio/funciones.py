@@ -260,7 +260,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
                 archivo.write(texto)
             contador += 1
-        tabla_in = pd.DataFrame(dict(zip(new_valores,new_valores)))
+        tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
