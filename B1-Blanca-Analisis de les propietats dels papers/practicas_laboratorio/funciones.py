@@ -162,8 +162,16 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
 
 def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
     nombres,tablas = leer_tabla(pd.read_excel(ruta))
-    if len(cifras_sig)<len(nombres):
+    if type(cifras_sig) == list:
+        if len(cifras_sig)<len(nombres):
+            cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == str:
         cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == int or type(cifras_sig) == float:
+        cifras_sig = [int(cifras_sig) for i in nombres]
+    else:
+        return print('Error en el formato de cifras')
+
     for pos_tab,tabla in enumerate(tablas):
         col = [i for i in tabla.columns]
         medias = []
