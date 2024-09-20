@@ -163,19 +163,8 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
     return texto_tabla
 
 def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
-    nombres,tablas = leer_tabla(ruta)
-    if type(cifras_sig) == list:
-        if len(cifras_sig)<len(nombres):
-            cifras_sig = [3 for i in nombres]
-    elif type(cifras_sig) == str:
-        cifras_sig = [3 for i in nombres]
-    elif type(cifras_sig) == int or type(cifras_sig) == float:
-        cifras_sig = [int(cifras_sig) for i in nombres]
-    else:
-        return print('Error en el formato de cifras')
 
-    for pos_tab,tabla in enumerate(tablas):
-        print(nombres[pos_tab])
+    def calculos_medias_std(tabla):
         col = [i for i in tabla.columns]
         medias = []
         val_max = []
@@ -222,10 +211,53 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 val_max.append(max(tabla[co]))
                 val_min.append(min(tabla[co]))
                 sec_float = []
-        new_valores = trans(new_valores)
-        tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores))] + ['medias','Desviacion estandard','valor maximo','valor minimo']] + acondicionar_tabla(trans(new_valores+[medias,val_std,val_max,val_min]),separador_decimales = ',',cifras_sig = cifras_sig[pos_tab]))))
-        display(tabla_latex)
-        print(3*'\n')
-        texto = tabla2latex(tabla_latex, nombre_cap = nombres[pos_tab], cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
-        with open(nombres[pos_tab].replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
-            archivo.write(texto)
+        return new_col,new_valores,val_std,medias,val_max,val_min
+
+
+    _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
+    tabla_Grubbs = tabla_Grubbs[0]
+    for pos in (tabla_Grubbs['Number of Observations']):
+        if pos == 10:
+            break
+    num_g = tabla_Grubbs['Upper 2.5% Significance: Level'][pos]
+
+    nombres,tablas = leer_tabla(ruta)
+    if type(cifras_sig) == list:
+        if len(cifras_sig)<len(nombres):
+            cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == str:
+        cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == int or type(cifras_sig) == float:
+        cifras_sig = [int(cifras_sig) for i in nombres]
+    else:
+        return print('Error en el formato de cifras')
+
+    for pos_tab,tabla in enumerate(tablas):
+        print(nombres[pos_tab])
+        tabla_in = tabla
+        bucle = True
+        bucle_end = True
+        contador = 0
+        while True:
+            if contador == 0:
+                nombre_tb = nombres[pos_tab]
+            else:
+                nombre_tb = nombres[pos_tab] + ' '+str(contador)
+            new_col,new_valores,val_std,medias,val_max,val_min = calculos_medias_std(tabla_in)
+            new_valores_t = trans(new_valores)
+            tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min]),separador_decimales = ',',cifras_sig = cifras_sig[pos_tab]))))
+            display(tabla_latex)
+            print(3*'\n')
+            for pos, lista in enumerate(new_valores):
+                val_provis = [ls for ls in lista if abs(ls-medias[pos])/val_std[pos] < num_g ] # or not isnan(abs(ls-medias[pos])/val_std[pos])
+                if len(val_provis) != len(new_valores[pos]) and bucle:
+                    new_valores[pos] = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista]
+                    bucle_end = False
+            if bucle_end:
+                tabla_in = pd.DataFrame(dict(zip(new_valores,new_valores)))
+                texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+                with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+                    archivo.write(texto)
+                break
+            
+            contador += 1
