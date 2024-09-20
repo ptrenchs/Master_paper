@@ -16,9 +16,17 @@ def trans(tabla):
                 tabla_trans[i].append(new_tabla[j][i])
     return tabla_trans
 
-def leer_tabla(ruta):
+def leer_tabla(ruta , nombre = 'tabla 1'):
     if type(ruta) == str:
-        tabla = pd.read_excel(ruta)
+        tablas = pd.read_excel(ruta, sheet_name=None)
+        # Iterar sobre las hojas
+        nombres_hojas = []
+        all_tablas = []
+        for nombre_hoja, dataframe in tablas.items():
+            nombres_hojas.append(nombre_hoja.replace('-',' ').replace('_',' '))
+            all_tablas.append(dataframe)
+        return [nombres_hojas, all_tablas]
+    
     if type(ruta) == pd.DataFrame:
         tabla = ruta
     col = [i for i in tabla.columns]
@@ -32,7 +40,7 @@ def leer_tabla(ruta):
                 new_tabla[-1].append(new_val)
             except:
                 new_tabla[-1].append(val)
-    return pd.DataFrame(dict(zip(col,trans(new_tabla))))
+    return [[nombre],[pd.DataFrame(dict(zip(col,trans(new_tabla))))]]
 
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
     val_str = str(val).replace(',','.')
@@ -123,7 +131,7 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
 
 def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimales = '.'):
     
-    tabla = leer_tabla(tabla)
+    _, tabla = leer_tabla(tabla)
     columnas, datos = tabla.columns, acondicionar_tabla(tabla.values, cifras_sig, separador_decimales)
 
     texto_tabla = '''
@@ -147,7 +155,66 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \n'
     texto_tabla += fila_def
-    texto_tabla += '\t\t\\hline\n\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','-').replace('_','-') + '}\n\\end{table}'
+    texto_tabla += '\t\t\\hline\n\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','-').replace('_','-') + '}\n\\end{table}\n\n\n'
 
 
-    print(texto_tabla)
+    return texto_tabla
+
+def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
+    nombres,tablas = leer_tabla(pd.read_excel(ruta))
+    if len(cifras_sig)<len(nombres):
+        cifras_sig = [3 for i in nombres]
+    for pos_tab,tabla in enumerate(tablas):
+        col = [i for i in tabla.columns]
+        medias = []
+        val_max = []
+        val_min = []
+        val_std = []
+        sec_float = []
+        new_valores = []
+        new_col = []
+        for co in col:
+            palabra = co.replace('-',' ').replace('\t',' ').replace('_',' ')
+            while True:
+                if palabra[0] == ' ':
+                    palabra = palabra[1:]
+                if palabra[-1] == ' ':
+                    palabra = palabra[:-1]
+                if 2*' ' in palabra:
+                    palabra = palabra.replace(2*' ',' ')
+                if palabra[0] != ' ' and palabra[-1] != ' ' and '  ' not in palabra:
+                    break
+            palabra = palabra.split(' ')
+            for i in range(len(palabra)):
+                try:
+                    float(palabra[i])
+                    isfloat = True
+                    pal_antic = ' '.join(palabra[:-1])
+                except:
+                    isfloat = False
+            if isfloat:
+                sec_float.append(tabla[co])
+            else:
+                if len(sec_float) > 0:
+                    sec_float = np.transpose(sec_float)
+                    sec_float = [np.mean(valores) for valores in sec_float]
+                    new_valores.append(sec_float)
+                    medias.append(np.mean(sec_float))
+                    val_std.append(np.std(sec_float,ddof=1))
+                    val_max.append(max(sec_float))
+                    val_min.append(min(sec_float))
+                    new_col.append(pal_antic)
+                new_col.append(co)
+                new_valores.append([val for val in tabla[co]])
+                medias.append(np.mean(tabla[co]))
+                val_std.append(np.std(tabla[co],ddof=1))
+                val_max.append(max(tabla[co]))
+                val_min.append(min(tabla[co]))
+                sec_float = []
+        new_valores = trans(new_valores)
+        tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores))] + ['medias','Desviacion estandard','valor maximo','valor minimo']] + acondicionar_tabla(trans(new_valores+[medias,val_std,val_max,val_min]),separador_decimales = ',',cifras_sig = cifras_sig[pos_tab]))))
+        display(tabla_latex)
+        print(3*'\n')
+        texto = tabla2latex(tabla_latex, nombre_cap = nombres[pos_tab], cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+        with open(nombres[pos_tab].replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+            archivo.write(texto)
