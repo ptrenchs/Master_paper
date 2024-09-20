@@ -234,6 +234,12 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
 
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
+        nombre_inicio = nombres[pos_tab] + ' inicio'
+        tabla_latex = pd.DataFrame(zip([i for i in tabla.columns], acondicionar_tabla([i for i in tabla.values],separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab])))
+        texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+        with open(nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+            archivo.write(texto)
+        display(tabla_latex)
         tabla_in = tabla
         bucle = True
         bucle_end = True
@@ -245,7 +251,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 nombre_tb = nombres[pos_tab] + ' '+str(contador)
             new_col,new_valores,val_std,medias,val_max,val_min = calculos_medias_std(tabla_in)
             new_valores_t = trans(new_valores)
-            tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min]),separador_decimales = ',',cifras_sig = cifras_sig[pos_tab]))))
+            tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
             display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
