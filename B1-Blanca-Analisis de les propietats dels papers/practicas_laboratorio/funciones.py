@@ -235,9 +235,9 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
         nombre_inicio = nombres[pos_tab] + ' inicio'
-        display(tabla)
-        display([i for i in tabla.values])
-        tabla_latex = pd.DataFrame(zip([i for i in tabla.columns], acondicionar_tabla([i for i in tabla.values],separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab])))
+        # display(tabla)
+        # display([i for i in tabla.values])
+        tabla_latex = pd.DataFrame(zip([i for i in tabla.columns], acondicionar_tabla([[j for j in i] for i in tabla.values],separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab])))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
