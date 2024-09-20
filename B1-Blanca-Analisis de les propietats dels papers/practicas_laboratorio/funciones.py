@@ -249,15 +249,18 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
-                val_provis = [ls for ls in lista if abs(ls-medias[pos])/val_std[pos] < num_g ] # or not isnan(abs(ls-medias[pos])/val_std[pos])
+                val_provis = [ls for ls in lista if abs(ls-medias[pos])/val_std[pos] < num_g  or isnan(ls)] # or not isnan(abs(ls-medias[pos])/val_std[pos])
                 if len(val_provis) != len(new_valores[pos]) and bucle:
                     new_valores[pos] = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista]
                     bucle_end = False
             if bucle_end:
-                tabla_in = pd.DataFrame(dict(zip(new_valores,new_valores)))
-                texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
-                with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
-                    archivo.write(texto)
                 break
-            
+            tabla_in = pd.DataFrame(dict(zip(new_valores,new_valores)))
+            texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+            with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+                archivo.write(texto)
             contador += 1
+        tabla_in = pd.DataFrame(dict(zip(new_valores,new_valores)))
+        texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+        with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+            archivo.write(texto)
