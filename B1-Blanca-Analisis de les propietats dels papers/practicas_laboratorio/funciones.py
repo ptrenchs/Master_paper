@@ -166,7 +166,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
 
 
 def crear_carpeta(nombre_carpeta,ruta = ''):
-    if ruta == '':
+    if ruta != '':
         ruta_carpeta = ruta + '/' + nombre_carpeta
     else:
         ruta_carpeta = nombre_carpeta
