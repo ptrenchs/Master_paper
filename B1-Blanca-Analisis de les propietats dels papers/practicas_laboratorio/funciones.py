@@ -202,7 +202,7 @@ def crear_include(ruta_carpeta, texto):
         texto = '\n'.join(texto)
 
     with open(ruta_carpeta + '/' + texto.replace(' ','_').replace('-',' ') +'.tex', 'w', encoding='utf-8') as archivo:
-        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'\n')
+        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'}\n')
     return '\\include{' + texto.replace(' ','_').replace('-',' ') + '}'
 
 def crear_main_latex(ruta_carpeta,texto_medio):
