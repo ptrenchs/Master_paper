@@ -270,6 +270,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
     nombre_archivo = '.'.join((ruta.split('/')[-1].replace('%20',' ').replace(' ','_')).split('.')[:-1])
     carpeta_latex = crear_carpeta(ruta = '', nombre_carpeta = nombre_archivo)
     crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
+    comandos_latex(carpeta_latex)
     texto_main = ''
     texto_main += crear_include(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
     texto_main += crear_include(carpeta_latex, 'Muestra papel')+ '\n'
