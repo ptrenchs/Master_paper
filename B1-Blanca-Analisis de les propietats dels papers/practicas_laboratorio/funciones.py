@@ -193,7 +193,19 @@ def comandos_latex(ruta_carpeta):
 \\usepackage{wrapfig}
 \\usepackage{vmargin}
 \\usepackage{ragged2e}
-\\usepackage{lipsum} % Para generar texto de ejemplo'''
+\\usepackage{lipsum} % Para generar texto de ejemplo
+\\setpapersize{A4}
+\\setmargins{2.2cm}          % marge esquerre
+{0cm}                       % marge superior
+{11cm}                    % amplada del text
+{23.57cm}                   % altura del text
+{55pt}                      % altura capçaleres
+{1.25cm}                    % espai entre el text i les capçaleres
+{1pt}                       % altura del peu de pàgina
+{1.5cm}                     % espai entre el text i el peu de pàgina
+%% FI MARGES
+
+\\spacing{1.5}'''
     with open(ruta_carpeta + '/' + 'comandos.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
 
