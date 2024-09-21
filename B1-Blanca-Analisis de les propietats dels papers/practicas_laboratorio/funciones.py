@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from math import isnan
+import os
 
 def trans(tabla):
     tabla_trans = []
@@ -129,6 +130,7 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
     return new_tabla
 
 
+
 def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimales = '.'):
     
     _, tabla = leer_tabla(tabla)
@@ -161,6 +163,55 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
 
 
     return texto_tabla
+
+
+def crear_carpeta(nombre_carpeta,ruta = ''):
+    if ruta == '':
+        ruta_carpeta = ruta + '/' + nombre_carpeta
+    else:
+        ruta_carpeta = nombre_carpeta
+    if not os.path.exists(ruta_carpeta):
+        os.mkdir(ruta_carpeta)
+        while True:
+            if os.path.exists(ruta_carpeta):
+                break
+    return ruta_carpeta
+
+def comandos_latex(ruta_carpeta):
+    texto = '''\\usepackage[utf8]{inputenc}
+\\usepackage{graphicx}
+\\usepackage{geometry}
+\\usepackage{float}
+\\usepackage[dvipsnames]{xcolor}
+\\usepackage{imakeidx}
+\\usepackage{tabularx}
+\\usepackage{hyperref}
+\\usepackage{fancyhdr}
+\\usepackage{setspace}
+\\usepackage{parskip}
+\\usepackage{wrapfig}
+\\usepackage{vmargin}
+\\usepackage{ragged2e}
+\\usepackage{lipsum} % Para generar texto de ejemplo'''
+    with open(ruta_carpeta + '/' + 'comandos.tex', 'w', encoding='utf-8') as archivo:
+        archivo.write(texto)
+
+def crear_include(ruta_carpeta, texto):
+    if type(texto_medio) == list:
+        texto_medio = '\n'.join(texto_medio)
+
+    with open(ruta_carpeta + '/' + texto.replace(' ','_').replace('-',' ') +'.tex', 'w', encoding='utf-8') as archivo:
+        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '}\n')
+    return '\\include{' + texto.replace(' ','_').replace('-',' ') + '}'
+
+def crear_main_latex(ruta_carpeta,texto_medio):
+    if type(texto_medio) == list:
+        texto_medio = '\n'.join(texto_medio)
+    texto = '\\documentclass{article}\n\\include{comandos}\n\\begin{document}\n\n'
+    texto += texto_medio
+    texto = '\n\\end{document}'
+    with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
+        archivo.write(texto)
 
 def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
 
@@ -214,6 +265,16 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         return new_col,new_valores,val_std,medias,val_max,val_min
 
 
+
+    nombre_archivo = ruta.split('/')[-1].replace('%20',' ').replace(' ','_')
+    carpeta_latex = crear_carpeta(ruta = '', nombre_carpeta = nombre_archivo)
+    crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
+    texto_main = ''
+    texto_main += crear_include(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
+    texto_main += crear_include(carpeta_latex, 'Muestra papel')+ '\n'
+    texto_main += crear_include(carpeta_latex, 'Normas a considerar')+ '\n'
+    texto_main += crear_include(carpeta_latex, 'Medidas')+ '\n'
+    
     _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
     tabla_Grubbs = tabla_Grubbs[0]
     for pos in (tabla_Grubbs['Number of Observations']):
@@ -242,7 +303,8 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
         tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla.columns],[['muetra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
-        with open(nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+        texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
+        with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
         display(tabla_latex)
         tabla_in = tabla
@@ -253,7 +315,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             if contador == 0:
                 nombre_tb = nombres[pos_tab]
             else:
-                nombre_tb = nombres[pos_tab] + ' '+str(contador)
+                nombre_tb = nombres[pos_tab] + ' Grubbs '+str(contador)
             new_col,new_valores,val_std,medias,val_max,val_min = calculos_medias_std(tabla_in)
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
@@ -267,11 +329,14 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             if bucle_end:
                 break
             tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
+            texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
             texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
-            with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+            with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
                 archivo.write(texto)
             contador += 1
         tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
+        texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
-        with open(nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+        with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
+    crear_main_latex(carpeta_latex,texto_main)
