@@ -197,8 +197,8 @@ def comandos_latex(ruta_carpeta):
         archivo.write(texto)
 
 def crear_include(ruta_carpeta, texto):
-    if type(texto_medio) == list:
-        texto_medio = '\n'.join(texto_medio)
+    if type(texto) == list:
+        texto = '\n'.join(texto)
 
     with open(ruta_carpeta + '/' + texto.replace(' ','_').replace('-',' ') +'.tex', 'w', encoding='utf-8') as archivo:
         archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '}\n')
