@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from math import isnan
 import os
+import shutil
 
 def trans(tabla):
     tabla_trans = []
@@ -340,3 +341,9 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
     crear_main_latex(carpeta_latex,texto_main)
+
+
+    
+
+    # Crear el archivo ZIP
+    shutil.make_archive(os.path.basename(carpeta_latex), 'zip', carpeta_latex)
