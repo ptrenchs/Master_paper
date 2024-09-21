@@ -153,12 +153,12 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
 
     texto_tabla += ' & '.join(col)
 
-    texto_tabla += '\n\t\t\\\\\\hline\n'
+    texto_tabla += '\n\t\t\\\\ \\hline\n'
 
     fila_def = ''
     for i in datos:
         fila = [str(j) for j in i]
-        fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \n'
+        fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \\hline\n'
     texto_tabla += fila_def
     texto_tabla += '\t\t\\hline\n\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','-').replace('_','-') + '}\n\\end{table}\n\n\n'
 
@@ -202,7 +202,7 @@ def crear_include(ruta_carpeta, texto):
         texto = '\n'.join(texto)
 
     with open(ruta_carpeta + '/' + texto.replace(' ','_').replace('-',' ') +'.tex', 'w', encoding='utf-8') as archivo:
-        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '}\n')
+        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'\n')
     return '\\include{' + texto.replace(' ','_').replace('-',' ') + '}'
 
 def crear_main_latex(ruta_carpeta,texto_medio):
