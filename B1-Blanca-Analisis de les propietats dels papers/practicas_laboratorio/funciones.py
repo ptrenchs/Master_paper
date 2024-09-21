@@ -210,7 +210,7 @@ def crear_main_latex(ruta_carpeta,texto_medio):
         texto_medio = '\n'.join(texto_medio)
     texto = '\\documentclass{article}\n\\include{comandos}\n\\begin{document}\n\n'
     texto += texto_medio
-    texto = '\n\\end{document}'
+    texto += '\n\\end{document}'
     with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
 
