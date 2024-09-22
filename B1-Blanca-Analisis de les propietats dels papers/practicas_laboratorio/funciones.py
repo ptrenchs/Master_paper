@@ -258,8 +258,8 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 except:
                     isfloat = False
             if isfloat:
-                sec_float.append(tabla[co])
-                print(sec_float)
+                sec_float.append([val for val in tabla[co]])
+                # print(sec_float)
             else:
                 if len(sec_float) != 0:
                     print(1)
