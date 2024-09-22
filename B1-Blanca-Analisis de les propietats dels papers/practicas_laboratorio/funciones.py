@@ -238,6 +238,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         new_valores = []
         new_col = []
         for co in col:
+            print(co)
             palabra = co.replace('-',' ').replace('\t',' ').replace('_',' ')
             while True:
                 if palabra[0] == ' ':
@@ -249,6 +250,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 if palabra[0] != ' ' and palabra[-1] != ' ' and '  ' not in palabra:
                     break
             palabra = palabra.split(' ')
+            print(palabra)
             for i in range(len(palabra)):
                 try:
                     float(palabra[i])
