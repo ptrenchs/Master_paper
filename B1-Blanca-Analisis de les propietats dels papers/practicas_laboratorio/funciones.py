@@ -252,7 +252,6 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             isfloat = False
             for i in range(len(palabra)):
                 try:
-                    print([palabra[:-1]])
                     int(palabra[i])
                     isfloat = True
                     pal_antic = ' '.join(palabra[:-1])
@@ -263,6 +262,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 sec_float.append([val for val in tabla[co]])
                 # print(sec_float)
             else:
+                print(sec_float)
                 if len(sec_float) != 0:
                     print(1)
                     sec_float = np.transpose(sec_float)
