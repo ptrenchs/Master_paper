@@ -255,6 +255,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                     float(palabra[i])
                     isfloat = True
                     pal_antic = ' '.join(palabra[:-1])
+                    break
                 except:
                     isfloat = False
             if isfloat:
@@ -270,14 +271,21 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                     val_max.append(max(sec_float))
                     val_min.append(min(sec_float))
                     new_col.append(pal_antic)
-                    sec_float = []
+                else:
+                    new_valores.append(sec_float)
+                    medias.append(np.mean(sec_float))
+                    val_std.append(np.std(sec_float,ddof=1))
+                    val_max.append(max(sec_float))
+                    val_min.append(min(sec_float))
+                    new_col.append(pal_antic)
+
                 new_col.append(co)
                 new_valores.append([val for val in tabla[co]])
                 medias.append(np.mean(tabla[co]))
                 val_std.append(np.std(tabla[co],ddof=1))
                 val_max.append(max(tabla[co]))
                 val_min.append(min(tabla[co]))
-                
+                sec_float = []
 
                 print(new_col)
                 print(new_valores)
