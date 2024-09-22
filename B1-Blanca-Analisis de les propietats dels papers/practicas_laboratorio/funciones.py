@@ -250,7 +250,6 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 if palabra[0] != ' ' and palabra[-1] != ' ' and '  ' not in palabra:
                     break
             palabra = palabra.split(' ')
-            print(palabra)
             for i in range(len(palabra)):
                 try:
                     float(palabra[i])
@@ -261,7 +260,8 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             if isfloat:
                 sec_float.append(tabla[co])
             else:
-                if len(sec_float) > 0:
+                if len(sec_float) != 0:
+                    print(1)
                     sec_float = np.transpose(sec_float)
                     sec_float = [np.mean(valores) for valores in sec_float]
                     new_valores.append(sec_float)
@@ -270,17 +270,18 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                     val_max.append(max(sec_float))
                     val_min.append(min(sec_float))
                     new_col.append(pal_antic)
+                    sec_float = []
                 new_col.append(co)
                 new_valores.append([val for val in tabla[co]])
                 medias.append(np.mean(tabla[co]))
                 val_std.append(np.std(tabla[co],ddof=1))
                 val_max.append(max(tabla[co]))
                 val_min.append(min(tabla[co]))
-                sec_float = []
+                
 
                 print(new_col)
-                print(3*'\n')
                 print(new_valores)
+                print(3*'\n')
         return new_col,new_valores,val_std,medias,val_max,val_min
 
 
