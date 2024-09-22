@@ -262,7 +262,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 sec_float.append([val for val in tabla[co]])
                 print(sec_float)
             else:
-                print(sec_float)
+                print(len(sec_float))
                 if len(sec_float) != 0:
                     print(1)
                     sec_float = np.transpose(sec_float)
