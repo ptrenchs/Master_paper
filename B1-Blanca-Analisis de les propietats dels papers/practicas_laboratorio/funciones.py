@@ -260,11 +260,8 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                     isfloat = False
             if isfloat:
                 sec_float.append([val for val in tabla[co]])
-                print(sec_float)
             else:
-                print(len(sec_float))
                 if len(sec_float) != 0:
-                    print(1)
                     sec_float = np.transpose(sec_float)
                     sec_float = [np.mean(valores) for valores in sec_float]
                     new_valores.append(sec_float)
@@ -281,7 +278,16 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 val_max.append(max(tabla[co]))
                 val_min.append(min(tabla[co]))
                 sec_float = []
-            
+        if isfloat and len(sec_float) != 0:
+            sec_float = np.transpose(sec_float)
+            sec_float = [np.mean(valores) for valores in sec_float]
+            new_valores.append(sec_float)
+            medias.append(np.mean(sec_float))
+            val_std.append(np.std(sec_float,ddof=1))
+            val_max.append(max(sec_float))
+            val_min.append(min(sec_float))
+            new_col.append(pal_antic)
+
             # print(new_col)
             # print(new_valores)
             # print(3*'\n')
