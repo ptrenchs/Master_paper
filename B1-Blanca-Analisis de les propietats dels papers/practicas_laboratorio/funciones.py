@@ -275,6 +275,10 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 val_max.append(max(tabla[co]))
                 val_min.append(min(tabla[co]))
                 sec_float = []
+
+                print(new_col)
+                print(3*'\n')
+                print(new_valores)
         return new_col,new_valores,val_std,medias,val_max,val_min
 
 
