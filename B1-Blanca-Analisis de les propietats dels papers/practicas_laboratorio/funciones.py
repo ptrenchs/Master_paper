@@ -252,8 +252,8 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             isfloat = False
             for i in range(len(palabra)):
                 try:
-                    print([palabra[i]])
-                    float(palabra[i])
+                    print([palabra[:-1]])
+                    int(palabra[i])
                     isfloat = True
                     pal_antic = ' '.join(palabra[:-1])
                     break
