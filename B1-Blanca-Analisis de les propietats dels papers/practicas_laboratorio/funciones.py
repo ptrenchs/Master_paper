@@ -271,7 +271,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                     val_max.append(max(sec_float))
                     val_min.append(min(sec_float))
                     new_col.append(pal_antic)
-                else:
+                elif len(sec_float) == 1:
                     sec_float = sec_float[0]
                     new_valores.append(sec_float)
                     medias.append(np.mean(sec_float))
