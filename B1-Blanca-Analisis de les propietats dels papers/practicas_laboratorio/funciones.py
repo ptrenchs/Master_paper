@@ -249,8 +249,10 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 if palabra[0] != ' ' and palabra[-1] != ' ' and '  ' not in palabra:
                     break
             palabra = palabra.split(' ')
+            isfloat = False
             for i in range(len(palabra)):
                 try:
+                    print([palabra[i]])
                     float(palabra[i])
                     isfloat = True
                     pal_antic = ' '.join(palabra[:-1])
@@ -280,9 +282,9 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 val_min.append(min(tabla[co]))
                 sec_float = []
             
-            print(new_col)
-            print(new_valores)
-            print(3*'\n')
+            # print(new_col)
+            # print(new_valores)
+            # print(3*'\n')
         return new_col,new_valores,val_std,medias,val_max,val_min
 
 
