@@ -280,7 +280,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 val_std.append(np.std(tabla[co],ddof=1))
                 val_max.append(max(tabla[co]))
                 val_min.append(min(tabla[co]))
-                intervalo_confianza.append(str(np.mean(tabla[co])) + ' +- ' + str(val_significativa((np.std(tabla[co],ddof=1) * valor_g - np.mean(tabla[co])),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+                intervalo_confianza.append(str(val_significativa(np.mean(tabla[co]),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(tabla[co],ddof=1) * valor_g - np.mean(tabla[co])),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                 sec_float = []
         if isfloat and len(sec_float) != 0:
             sec_float = np.transpose(sec_float)
