@@ -228,8 +228,9 @@ def crear_main_latex(ruta_carpeta,texto_medio):
 
 def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
 
-    def calculos_medias_std(tabla):
+    def calculos_medias_std(tabla, valor_g, cifras_sig = 3,separador_decimales = '.'):
         col = [i for i in tabla.columns]
+        intervalo_confianza = []
         medias = []
         val_max = []
         val_min = []
@@ -269,7 +270,9 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                     val_std.append(np.std(sec_float,ddof=1))
                     val_max.append(max(sec_float))
                     val_min.append(min(sec_float))
+                    intervalo_confianza.append(str(np.mean(sec_float)) + ' +- ' + str(val_significativa((np.std(sec_float,ddof=1) * valor_g - np.mean(sec_float)),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                     new_col.append(pal_antic)
+                    
 
                 new_col.append(co)
                 new_valores.append([val for val in tabla[co]])
@@ -277,6 +280,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 val_std.append(np.std(tabla[co],ddof=1))
                 val_max.append(max(tabla[co]))
                 val_min.append(min(tabla[co]))
+                intervalo_confianza.append(str(np.mean(tabla[co])) + ' +- ' + str(val_significativa((np.std(tabla[co],ddof=1) * valor_g - np.mean(tabla[co])),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                 sec_float = []
         if isfloat and len(sec_float) != 0:
             sec_float = np.transpose(sec_float)
@@ -286,12 +290,13 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             val_std.append(np.std(sec_float,ddof=1))
             val_max.append(max(sec_float))
             val_min.append(min(sec_float))
+            intervalo_confianza.append(str(np.mean(sec_float)) + ' +- ' + str(val_significativa((np.std(sec_float,ddof=1) * valor_g - np.mean(sec_float)),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
             new_col.append(pal_antic)
 
             # print(new_col)
             # print(new_valores)
             # print(3*'\n')
-        return new_col,new_valores,val_std,medias,val_max,val_min
+        return new_col,new_valores,val_std,medias,val_max,val_min,intervalo_confianza
 
 
 
@@ -346,9 +351,9 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                 nombre_tb = nombres[pos_tab]
             else:
                 nombre_tb = nombres[pos_tab] + ' Grubbs '+str(contador)
-            new_col,new_valores,val_std,medias,val_max,val_min = calculos_medias_std(tabla_in)
+            new_col,new_valores,val_std,medias,val_max,val_min,intervalo_confianza = calculos_medias_std(tabla_in, num_g, cifras_sig = cifras_sig, separador_decimales = separador_decimales)
             new_valores_t = trans(new_valores)
-            tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
+            tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo', 'Intervalo de confianza']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min,intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
             display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
@@ -369,6 +374,56 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
+    crear_main_latex(carpeta_latex,texto_main)
+
+
+    
+
+    # Crear el archivo ZIP
+    shutil.make_archive(os.path.basename(carpeta_latex), 'zip', carpeta_latex)
+
+
+def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.'):
+
+    nombre_archivo = '.'.join((ruta.split('/')[-1].replace('%20',' ').replace(' ','_')).split('.')[:-1])
+    carpeta_latex = crear_carpeta(ruta = '', nombre_carpeta = nombre_archivo)
+    crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
+    comandos_latex(carpeta_latex)
+    texto_main = ''
+    texto_main += crear_include(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
+    texto_main += crear_include(carpeta_latex, 'Muestra papel')+ '\n'
+    texto_main += crear_include(carpeta_latex, 'Normas a considerar')+ '\n'
+    texto_main += crear_include(carpeta_latex, 'Medidas')+ '\n'
+    
+    _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
+    tabla_Grubbs = tabla_Grubbs[0]
+    for pos in (tabla_Grubbs['Number of Observations']):
+        if pos == 10:
+            break
+    num_g = tabla_Grubbs['Upper 2.5% Significance: Level'][pos]
+
+    nombres,tablas = leer_tabla(ruta)
+    if type(cifras_sig) == list:
+        if len(cifras_sig)<len(nombres):
+            cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == str:
+        cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == int or type(cifras_sig) == float:
+        cifras_sig = [int(cifras_sig) for i in nombres]
+    else:
+        return print('Error en el formato de cifras')
+
+    for pos_tab,tabla in enumerate(tablas):
+        print(nombres[pos_tab])
+        nombre_inicio = nombres[pos_tab] + ' inicio'
+        tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
+        tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla.columns],[['muetra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
+        texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+        texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
+        with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+            archivo.write(texto)
+        display(tabla_latex)
+        
     crear_main_latex(carpeta_latex,texto_main)
 
 
