@@ -270,7 +270,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
                     val_std.append(np.std(sec_float,ddof=1))
                     val_max.append(max(sec_float))
                     val_min.append(min(sec_float))
-                    intervalo_confianza.append(str(np.mean(sec_float)) + ' +- ' + str(val_significativa((np.std(sec_float,ddof=1) * valor_g - np.mean(sec_float)),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+                    intervalo_confianza.append(str(val_significativa(np.mean(sec_float),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa((np.std(sec_float,ddof=1) * valor_g - np.mean(sec_float)),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                     new_col.append(pal_antic)
                     
 
@@ -290,7 +290,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
             val_std.append(np.std(sec_float,ddof=1))
             val_max.append(max(sec_float))
             val_min.append(min(sec_float))
-            intervalo_confianza.append(str(np.mean(sec_float)) + ' +- ' + str(val_significativa((np.std(sec_float,ddof=1) * valor_g - np.mean(sec_float)),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+            intervalo_confianza.append(str(val_significativa(np.mean(sec_float),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa((np.std(sec_float,ddof=1) * valor_g - np.mean(sec_float)),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
             new_col.append(pal_antic)
 
             # print(new_col)
