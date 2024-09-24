@@ -234,7 +234,7 @@ def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '
     texto += '\\fancyhead[L]{'+ left +'}\n'
     texto += '\\fancyhead[C]{'+ center +'}\n'
     texto += '\\fancyhead[R]{'+ right +'}\n'
-    texto += '\\fancyfoot[C]{\\numpages}\n'
+    texto += '\\fancyfoot[C]{\\thepage}\n'
     texto += '\\begin{document}\n'
     texto += '\\pagestyle{fancy}\n\n'
     texto += texto_medio
