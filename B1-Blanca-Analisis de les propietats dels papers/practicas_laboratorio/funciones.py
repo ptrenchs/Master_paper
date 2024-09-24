@@ -309,9 +309,9 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             intervalo_confianza.append(str(val_significativa(np.mean(sec_float),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
             new_col.append(pal_antic)
 
-        print(new_col)
-        print(val_std)
-        print(intervalo_confianza)
+        # print(new_col)
+        # print(val_std)
+        # print(intervalo_confianza)
             # print(new_valores)
             # print(3*'\n')
         return new_col,new_valores,val_std,medias,val_max,val_min,intervalo_confianza
