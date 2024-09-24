@@ -282,31 +282,35 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
                     sec_float = np.transpose(sec_float)
                     sec_float = [np.mean(valores) for valores in sec_float]
                     new_valores.append(sec_float)
-                    medias.append(np.mean(sec_float))
-                    val_std.append(np.std(sec_float,ddof=1))
+                    sec_float_no_nan = [sfnn for sfnn in sec_float if not isnan(sfnn)]
+                    medias.append(np.mean(sec_float_no_nan))
+                    val_std.append(np.std(sec_float_no_nan,ddof=1))
                     val_max.append(max(sec_float))
                     val_min.append(min(sec_float))
-                    intervalo_confianza.append(str(val_significativa(np.mean(sec_float),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+                    intervalo_confianza.append(str(val_significativa(np.mean(sec_float_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float_no_nan,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                     new_col.append(pal_antic)
                     
 
                 new_col.append(co)
                 new_valores.append([val for val in tabla[co]])
-                medias.append(np.mean(tabla[co]))
-                val_std.append(np.std(tabla[co],ddof=1))
-                val_max.append(max(tabla[co]))
-                val_min.append(min(tabla[co]))
-                intervalo_confianza.append(str(val_significativa(np.mean(tabla[co]),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(tabla[co],ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+                tab_no_nan = [tbnn for tbnn in sec_float if not isnan(tbnn)]
+                medias.append(np.mean(tab_no_nan))
+                val_std.append(np.std(tab_no_nan,ddof=1))
+                val_max.append(max(tab_no_nan))
+                val_min.append(min(tab_no_nan))
+                intervalo_confianza.append(str(val_significativa(np.mean(tab_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(tab_no_nan,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                 sec_float = []
+                
         if isfloat and len(sec_float) != 0:
             sec_float = np.transpose(sec_float)
             sec_float = [np.mean(valores) for valores in sec_float]
             new_valores.append(sec_float)
-            medias.append(np.mean(sec_float))
-            val_std.append(np.std(sec_float,ddof=1))
+            sec_float_no_nan = sec_float_no_nan = [sfnn for sfnn in sec_float if not isnan(sfnn)]
+            medias.append(np.mean(sec_float_no_nan))
+            val_std.append(np.std(sec_float_no_nan,ddof=1))
             val_max.append(max(sec_float))
             val_min.append(min(sec_float))
-            intervalo_confianza.append(str(val_significativa(np.mean(sec_float),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+            intervalo_confianza.append(str(val_significativa(np.mean(sec_float_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float_no_nan,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
             new_col.append(pal_antic)
 
         # print(new_col)
