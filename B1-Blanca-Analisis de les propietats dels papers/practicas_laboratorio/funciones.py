@@ -143,7 +143,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
 \\begin{table}[H]
 \t\\centering
     '''
-    texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(0.9 * round(float(1/len(columnas)),3))+'\\textwidth}'for i in columnas])+'|}'
+    texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(0.9 * round(float(1/len(columnas)),2))+'\\textwidth}'for i in columnas])+'|}'
 
     texto_tabla += '''
 \t\t\\hline\n\t\t'''
