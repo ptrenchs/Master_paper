@@ -334,6 +334,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
         if pos == num_mostres:
             break
     num_g = tabla_Grubbs['Upper 2.5% Significance: Level'][pos]
+    print(num_g)
 
     nombres,tablas = leer_tabla(ruta)
     if type(cifras_sig) == list:
