@@ -223,12 +223,12 @@ def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '
         texto_medio = '\n'.join(texto_medio)
     texto = '\\documentclass{article}\n'
     texto += '\\include{comandos}\n'
-    texto += '\\documentclass{article}\n'
     texto += '\\fancyhead[L]{'+ left +'}\n'
     texto += '\\fancyhead[C]{'+ center +'}\n'
     texto += '\\fancyhead[R]{'+ right +'}\n'
     texto += '\\fancyfoot[C]{\\numpages}\n'
-    texto += '\\begin{document}\n\n'
+    texto += '\\begin{document}\n'
+    texto += '\\pagestyle{fancy}\n\n'
     texto += texto_medio
     texto += '\n\\end{document}'
     with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
