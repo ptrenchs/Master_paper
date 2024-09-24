@@ -242,7 +242,7 @@ def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '
     with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
 
-def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
+def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
     def calculos_medias_std(tabla, valor_g, cifras_sig = 3,separador_decimales = '.'):
         col = [i for i in tabla.columns]
@@ -329,7 +329,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.', left = '',
     _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
     tabla_Grubbs = tabla_Grubbs[0]
     for pos in (tabla_Grubbs['Number of Observations']):
-        if pos == 10:
+        if pos == num_mostres:
             break
     num_g = tabla_Grubbs['Upper 2.5% Significance: Level'][pos]
 
