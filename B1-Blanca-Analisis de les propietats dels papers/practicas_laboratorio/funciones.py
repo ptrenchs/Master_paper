@@ -330,7 +330,10 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
     texto_main += crear_input(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
     texto_main += crear_input(carpeta_latex, 'Muestra papel')+ '\n'
     texto_main += crear_input(carpeta_latex, 'Normas a considerar')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Aparatos utilizados')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Condiciones ambientales')+ '\n'
     texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
+    
     
     _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
     tabla_Grubbs = tabla_Grubbs[0]
@@ -398,6 +401,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
+    texto_main += crear_input(carpeta_latex, 'Observaciones')+ '\n'
     crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
 
 
