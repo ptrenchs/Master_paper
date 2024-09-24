@@ -218,6 +218,14 @@ def crear_include(ruta_carpeta, texto):
         archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'}\n')
     return '\\include{' + texto.replace(' ','_').replace('-',' ') + '}'
 
+def crear_input(ruta_carpeta, texto):
+    if type(texto) == list:
+        texto = '\n'.join(texto)
+
+    with open(ruta_carpeta + '/' + texto.replace(' ','_').replace('-',' ') +'.tex', 'w', encoding='utf-8') as archivo:
+        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'}\n')
+    return '\\input{' + texto.replace(' ','_').replace('-',' ') + '}'
+
 def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '\\today'):
     if type(texto_medio) == list:
         texto_medio = '\n'.join(texto_medio)
@@ -313,10 +321,10 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.', left = '',
     crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
     comandos_latex(carpeta_latex)
     texto_main = ''
-    texto_main += crear_include(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
-    texto_main += crear_include(carpeta_latex, 'Muestra papel')+ '\n'
-    texto_main += crear_include(carpeta_latex, 'Normas a considerar')+ '\n'
-    texto_main += crear_include(carpeta_latex, 'Medidas')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
+    texto_main += crear_input(carpeta_latex, 'Muestra papel')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Normas a considerar')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
     
     _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
     tabla_Grubbs = tabla_Grubbs[0]
@@ -391,17 +399,17 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.', left = '',
     shutil.make_archive(os.path.basename(carpeta_latex), 'zip', carpeta_latex)
 
 
-def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.'):
+def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
     nombre_archivo = '.'.join((ruta.split('/')[-1].replace('%20',' ').replace(' ','_')).split('.')[:-1])
     carpeta_latex = crear_carpeta(ruta = '', nombre_carpeta = nombre_archivo)
     crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
     comandos_latex(carpeta_latex)
     texto_main = ''
-    texto_main += crear_include(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
-    texto_main += crear_include(carpeta_latex, 'Muestra papel')+ '\n'
-    texto_main += crear_include(carpeta_latex, 'Normas a considerar')+ '\n'
-    texto_main += crear_include(carpeta_latex, 'Medidas')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
+    texto_main += crear_input(carpeta_latex, 'Muestra papel')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Normas a considerar')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
     
     _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
     tabla_Grubbs = tabla_Grubbs[0]
@@ -432,7 +440,7 @@ def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.'):
             archivo.write(texto)
         display(tabla_latex)
         
-    crear_main_latex(carpeta_latex,texto_main)
+    crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
 
 
     
