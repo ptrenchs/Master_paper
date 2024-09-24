@@ -180,6 +180,7 @@ def crear_carpeta(nombre_carpeta,ruta = ''):
 
 def comandos_latex(ruta_carpeta):
     texto = '''\\usepackage[utf8]{inputenc}
+\\usepackage[spanish]{babel}
 \\usepackage{graphicx}
 \\usepackage{geometry}
 \\usepackage{float}
@@ -217,16 +218,23 @@ def crear_include(ruta_carpeta, texto):
         archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'}\n')
     return '\\include{' + texto.replace(' ','_').replace('-',' ') + '}'
 
-def crear_main_latex(ruta_carpeta,texto_medio):
+def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '\\today'):
     if type(texto_medio) == list:
         texto_medio = '\n'.join(texto_medio)
-    texto = '\\documentclass{article}\n\\include{comandos}\n\\begin{document}\n\n'
+    texto = '\\documentclass{article}\n'
+    texto += '\\include{comandos}\n'
+    texto += '\\documentclass{article}\n'
+    texto += '\\fancyhead[L]{'+ left +'}\n'
+    texto += '\\fancyhead[C]{'+ center +'}\n'
+    texto += '\\fancyhead[R]{'+ right +'}\n'
+    texto += '\\fancyfoot[C]{\\numpages}\n'
+    texto += '\\begin{document}\n\n'
     texto += texto_medio
     texto += '\n\\end{document}'
     with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
 
-def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
+def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
     def calculos_medias_std(tabla, valor_g, cifras_sig = 3,separador_decimales = '.'):
         col = [i for i in tabla.columns]
@@ -374,7 +382,7 @@ def ejercicio_blanca(ruta, cifras_sig = 3, separador_decimales = '.'):
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
-    crear_main_latex(carpeta_latex,texto_main)
+    crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
 
 
     
