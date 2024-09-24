@@ -310,7 +310,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             new_col.append(pal_antic)
 
             # print(new_col)
-            # print(new_valores)
+            print(new_valores)
             # print(3*'\n')
         return new_col,new_valores,val_std,medias,val_max,val_min,intervalo_confianza
 
