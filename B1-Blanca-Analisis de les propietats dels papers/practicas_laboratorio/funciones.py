@@ -293,14 +293,14 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
 
                 new_col.append(co)
                 new_valores.append([val for val in tabla[co]])
-                tab_no_nan = [tbnn for tbnn in sec_float if not isnan(tbnn)]
+                tab_no_nan = [tbnn for tbnn in tabla[co] if not isnan(tbnn)]
                 medias.append(np.mean(tab_no_nan))
                 val_std.append(np.std(tab_no_nan,ddof=1))
                 val_max.append(max(tab_no_nan))
                 val_min.append(min(tab_no_nan))
                 intervalo_confianza.append(str(val_significativa(np.mean(tab_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(tab_no_nan,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                 sec_float = []
-                
+
         if isfloat and len(sec_float) != 0:
             sec_float = np.transpose(sec_float)
             sec_float = [np.mean(valores) for valores in sec_float]
