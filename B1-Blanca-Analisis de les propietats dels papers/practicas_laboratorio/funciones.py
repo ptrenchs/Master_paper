@@ -143,7 +143,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
 \\begin{table}[H]
 \t\\centering
     '''
-    texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(0.9 * round(float(1/len(columnas)),2))+'\\textwidth}'for i in columnas])+'|}'
+    texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}'for i in columnas])+'|}'
 
     texto_tabla += '''
 \t\t\\hline\n\t\t'''
@@ -198,7 +198,7 @@ def comandos_latex(ruta_carpeta):
 \\setpapersize{A4}
 \\setmargins{2.2cm}          % marge esquerre
 {0cm}                       % marge superior
-{11cm}                    % amplada del text
+{16cm}                    % amplada del text
 {23.57cm}                   % altura del text
 {55pt}                      % altura capçaleres
 {1.25cm}                    % espai entre el text i les capçaleres
