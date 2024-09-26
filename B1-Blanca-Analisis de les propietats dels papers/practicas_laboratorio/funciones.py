@@ -426,12 +426,6 @@ def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.', left = '
     # texto_main += crear_input(carpeta_latex, 'Condiciones ambientales')+ '\n'
     # texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
     
-    _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
-    tabla_Grubbs = tabla_Grubbs[0]
-    for pos in (tabla_Grubbs['Number of Observations']):
-        if pos == 10:
-            break
-    num_g = tabla_Grubbs['Upper 2.5% Significance: Level'][pos]
 
     nombres,tablas = leer_tabla(ruta)
     if type(cifras_sig) == list:
