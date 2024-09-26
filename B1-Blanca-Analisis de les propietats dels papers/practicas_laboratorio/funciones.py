@@ -335,7 +335,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
     texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
     
     
-    _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
+    _,tabla_Grubbs = leer_tabla(ruta = 'https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Blanca-Analisis%20de%20les%20propietats%20dels%20papers/practicas_laboratorio/practica_1/tabla_Grubbs.xlsx' , nombre = 'tabla 1')
     tabla_Grubbs = tabla_Grubbs[0]
     for pos,tb in enumerate(tabla_Grubbs['Number of Observations']):
         if tb == num_mostres:
