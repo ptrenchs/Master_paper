@@ -457,3 +457,49 @@ def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.', left = '
 
     # Crear el archivo ZIP
     shutil.make_archive(os.path.basename(carpeta_latex), 'zip', carpeta_latex)
+
+
+def ejercicio_oriol(ruta, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
+
+    nombre_archivo = '.'.join((ruta.split('/')[-1].replace('%20',' ').replace(' ','_')).split('.')[:-1])
+    carpeta_latex = crear_carpeta(ruta = '', nombre_carpeta = nombre_archivo)
+    crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
+    comandos_latex(carpeta_latex)
+    texto_main = ''
+    texto_main += crear_input(carpeta_latex, 'Objetivo de la práctica')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Material utilizado')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Normativa aplicable o a tener en cuenta')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Datos experimentales obtenidos (medidas directas obtenidas en el laboratorio)')+ '\n'
+    # texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
+    
+
+    nombres,tablas = leer_tabla(ruta)
+    if type(cifras_sig) == list:
+        if len(cifras_sig)<len(nombres):
+            cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == str:
+        cifras_sig = [3 for i in nombres]
+    elif type(cifras_sig) == int or type(cifras_sig) == float:
+        cifras_sig = [int(cifras_sig) for i in nombres]
+    else:
+        return print('Error en el formato de cifras')
+
+    for pos_tab,tabla in enumerate(tablas):
+        print(nombres[pos_tab])
+        nombre_inicio = nombres[pos_tab] + ' inicio'
+        tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
+        tabla_latex = pd.DataFrame(dict(zip([i for i in tabla.columns], tabla_t)))
+        texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+        texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
+        with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
+            archivo.write(texto)
+        display(tabla_latex)
+    texto_main += crear_input(carpeta_latex, 'Resultados (Incluyendo factores de conversión y justificando la eliminación de valores discrepantes)')+ '\n'
+    texto_main += crear_input(carpeta_latex, 'Análisis, discusión de los resultados y conclusiones')+ '\n'
+    crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
+
+
+    
+
+    # Crear el archivo ZIP
+    shutil.make_archive(os.path.basename(carpeta_latex), 'zip', carpeta_latex)
