@@ -441,7 +441,7 @@ def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.', left = '
 
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
-        nombre_inicio = nombres[pos_tab] + ' inicio'
+        nombre_inicio = nombres[pos_tab]
         tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
         tabla_latex = pd.DataFrame(dict(zip([i for i in tabla.columns], tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
@@ -487,7 +487,7 @@ def ejercicio_oriol(ruta, cifras_sig = 3, separador_decimales = '.', left = '', 
 
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
-        nombre_inicio = nombres[pos_tab] + ' inicio'
+        nombre_inicio = nombres[pos_tab]
         tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
         tabla_latex = pd.DataFrame(dict(zip([i for i in tabla.columns], tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
