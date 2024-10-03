@@ -150,7 +150,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
 \t\t\\hline\n\t\t'''
     col = []
     for i in columnas:
-        col.append('\\multicolumn{1}{|c|}{\\textbf{'+ i +r'}}')
+        col.append('\\multicolumn{1}{|m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}|}{\\textbf{'+ i +r'}}')
 
     texto_tabla += ' & '.join(col)
 
@@ -195,6 +195,7 @@ def comandos_latex(ruta_carpeta):
 \\usepackage{wrapfig}
 \\usepackage{vmargin}
 \\usepackage{ragged2e}
+\\usepackage{array}
 \\usepackage{lipsum} % Para generar texto de ejemplo
 \\setpapersize{A4}
 \\setmargins{2.2cm}          % marge esquerre
