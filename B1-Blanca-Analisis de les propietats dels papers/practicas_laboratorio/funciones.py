@@ -367,10 +367,6 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
         nombre_inicio = nombres[pos_tab] + ' inicio'
-        # display(tabla)
-        # display(tabla.values)
-        # print([i for i in tabla.values])
-        # print([i for i in tabla.columns])
         tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
         tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla.columns],[['muetra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
@@ -378,6 +374,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
         with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
         display(tabla_latex)
+        print(3*'\n')
         tabla_in = tabla
         bucle = True
         bucle_end = True
@@ -390,6 +387,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             new_col,new_valores,val_std,medias,val_max,val_min,intervalo_confianza = calculos_medias_std(tabla_in, num_g, cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo', 'Intervalo de confianza']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min,intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
+            display(tabla_in)
             display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
@@ -409,7 +407,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
                 archivo.write(texto)
             contador += 1
-        tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
+        # tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
         texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
