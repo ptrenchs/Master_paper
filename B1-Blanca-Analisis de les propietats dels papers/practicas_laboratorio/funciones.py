@@ -392,10 +392,9 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 print([abs(ls-medias[pos])/val_std[pos] for ls in lista],num_g)
-                val_provis = [ls for ls in lista if abs(ls-medias[pos])/val_std[pos] < num_g  or isnan(ls)] # or not isnan(abs(ls-medias[pos])/val_std[pos])
-                if len(val_provis) != len(new_valores[pos]) and bucle:
-                    new_valores[pos] = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista]
-
+                val_provis = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista] # or not isnan(abs(ls-medias[pos])/val_std[pos])
+                if val_provis != new_valores[pos] and bucle:
+                    new_valores[pos] = val_provis
                     bucle_end = False
             if bucle_end:
                 break
