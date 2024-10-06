@@ -253,7 +253,7 @@ def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '
 def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
     def calculos_medias_std(tabla, valor_g, cifras_sig = 3,separador_decimales = '.'):
-        display(tabla)
+        # display(tabla)
         col = [i for i in tabla.columns]
         intervalo_confianza = []
         medias = []
@@ -391,9 +391,11 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             # display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
+                print([abs(ls-medias[pos])/val_std[pos] for ls in lista],num_g)
                 print(lista)
                 val_provis = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista] # or not isnan(abs(ls-medias[pos])/val_std[pos])
                 print(val_provis)
+                print(3*'\n')
                 if val_provis != new_valores[pos] and bucle:
                     new_valores[pos] = val_provis
                     bucle_end = False
