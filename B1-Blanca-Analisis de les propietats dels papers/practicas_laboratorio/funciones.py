@@ -389,7 +389,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 print('Los valores son')
-                print([abs(ls-medias[pos])/val_std[pos] for ls in lista],num_g)
+                print([abs(ls-medias[pos])/val_std[pos] for ls in lista],num_g, medias[pos], val_std[pos])
                 print(lista)
                 val_provis = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista] # or not isnan(abs(ls-medias[pos])/val_std[pos])
                 print(val_provis)
