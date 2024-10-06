@@ -253,7 +253,6 @@ def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '
 def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
     def calculos_medias_std(tabla, valor_g, cifras_sig = 3,separador_decimales = '.'):
-        # display(tabla)
         col = [i for i in tabla.columns]
         intervalo_confianza = []
         medias = []
@@ -365,14 +364,17 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
         nombre_inicio = nombres[pos_tab] + ' inicio'
+        # display(tabla)
+        # display(tabla.values)
+        # print([i for i in tabla.values])
+        # print([i for i in tabla.columns])
         tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
         tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla.columns],[['muetra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
         with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
-        # display(tabla_latex)
-        print(3*'\n')
+        display(tabla_latex)
         tabla_in = tabla
         bucle = True
         bucle_end = True
@@ -385,18 +387,13 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             new_col,new_valores,val_std,medias,val_max,val_min,intervalo_confianza = calculos_medias_std(tabla_in, num_g, cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo', 'Intervalo de confianza']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min,intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
-            # display(tabla_latex)
+            display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 if val_std[pos] != 0:
-                    print('Los valores son')
-                    print([abs(ls-medias[pos])/val_std[pos] for ls in lista],num_g, medias[pos], val_std[pos])
-                    print(lista)
-                    val_provis = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista] # or not isnan(abs(ls-medias[pos])/val_std[pos])
-                    print(val_provis)
-                    print(3*'\n')
-                    if val_provis != new_valores[pos] and bucle:
-                        new_valores[pos] = val_provis
+                    val_provis = [ls for ls in lista if abs(ls-medias[pos])/val_std[pos] < num_g  or isnan(ls)] # or not isnan(abs(ls-medias[pos])/val_std[pos])
+                    if len(val_provis) != len(new_valores[pos]) and bucle:
+                        new_valores[pos] = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista]
                         bucle_end = False
             if bucle_end:
                 break
@@ -408,7 +405,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
                 archivo.write(texto)
             contador += 1
-        # tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
+        tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
         texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
