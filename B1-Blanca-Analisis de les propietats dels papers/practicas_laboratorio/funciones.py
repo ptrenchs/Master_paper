@@ -303,8 +303,6 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
                 new_col.append(co)
                 new_valores.append([val for val in tabla[co]])
                 tab_no_nan = [tbnn for tbnn in tabla[co] if not isnan(tbnn)]
-                print(tabla[co])
-                print(tab_no_nan)
                 medias.append(np.mean(tab_no_nan))
                 val_std.append(np.std(tab_no_nan,ddof=1))
                 val_max.append(max(tab_no_nan))
@@ -387,10 +385,10 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             new_col,new_valores,val_std,medias,val_max,val_min,intervalo_confianza = calculos_medias_std(tabla_in, num_g, cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo', 'Intervalo de confianza']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min,intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
-            display(tabla_in)
             # display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
+                print('Los valores son')
                 print([abs(ls-medias[pos])/val_std[pos] for ls in lista],num_g)
                 print(lista)
                 val_provis = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista] # or not isnan(abs(ls-medias[pos])/val_std[pos])
