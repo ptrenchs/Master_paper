@@ -46,15 +46,19 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
         return [[nombre],[pd.DataFrame(dict(zip(col,trans(new_tabla))))]]
 
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
-    print(val)
     val_str = str(val).replace(',','.')
     new_val = float(val_str)
+    if new_val < 0:
+        signe = '-'
+    else:
+        signe = ''
+    new_val = abs(new_val)   
     val_str = str(f"{new_val:.20f}")
     val_str_int = val_str.split('.')[0]
     val_str_dec = val_str.split('.')[-1]
     if int(val_str_dec) == 0 and int(val_str_int) == 0:
-        val_sig = '0' + '.' + cifras_sig * '0'
-
+        val_sin_e = '0' + '.' + cifras_sig * '0'
+        val_e = 'e+0'
     if int(val_str_dec) == 0 and int(val_str_int) != 0:
         val_sin_e = val_str_int[0] + '.' + val_str_int[1:][:cifras_sig]
         val_e = 'e+' + str(len(val_str_int) - 1)
@@ -83,17 +87,18 @@ def val_significativa(val,cifras_sig, separador_decimales = '.'):
                 val_e = 'e+' + str(len(val_str_int) - 1)
 
     val_sin_e = str(round(float(val_sin_e),cifras_sig-1))
+    # print(val_sin_e)
     val_sin_e = val_sin_e + abs(len(val_sin_e)-1 - cifras_sig) * '0'
     val_tot = val_sin_e + val_e
     if int(val_tot[-2:])<3 and int(val_tot[-2:])>=0:
         val_tot_str = str(float(val_tot))
         if len(val_tot_str)-1<cifras_sig:
-            return (val_tot_str + abs(len(val_tot_str)-1 - cifras_sig) * '0').replace('.',separador_decimales)
+            return (signe + val_tot_str + abs(len(val_tot_str)-1 - cifras_sig) * '0').replace('.',separador_decimales)
         else:
-            return val_tot_str.replace('.',separador_decimales)
+            return signe + val_tot_str.replace('.',separador_decimales)
     else:
         # if int(val_tot[-2:])z0:
-        return (val_sin_e + val_e).replace('.',separador_decimales)
+        return (signe + val_sin_e + val_e).replace('.',separador_decimales)
 
 
 def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
