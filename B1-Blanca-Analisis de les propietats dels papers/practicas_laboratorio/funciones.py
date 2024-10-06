@@ -302,6 +302,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
                 new_col.append(co)
                 new_valores.append([val for val in tabla[co]])
                 tab_no_nan = [tbnn for tbnn in tabla[co] if not isnan(tbnn)]
+                print(tab_no_nan)
                 medias.append(np.mean(tab_no_nan))
                 val_std.append(np.std(tab_no_nan,ddof=1))
                 val_max.append(max(tab_no_nan))
