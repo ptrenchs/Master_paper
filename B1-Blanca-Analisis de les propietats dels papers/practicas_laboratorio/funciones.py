@@ -46,6 +46,7 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
         return [[nombre],[pd.DataFrame(dict(zip(col,trans(new_tabla))))]]
 
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
+    print(val)
     val_str = str(val).replace(',','.')
     new_val = float(val_str)
     val_str = str(f"{new_val:.20f}")
