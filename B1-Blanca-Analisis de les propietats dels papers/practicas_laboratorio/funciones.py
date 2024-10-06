@@ -253,6 +253,7 @@ def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '
 def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
     def calculos_medias_std(tabla, valor_g, cifras_sig = 3,separador_decimales = '.'):
+        display(tabla)
         col = [i for i in tabla.columns]
         intervalo_confianza = []
         medias = []
