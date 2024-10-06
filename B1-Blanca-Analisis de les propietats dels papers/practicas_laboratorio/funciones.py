@@ -373,7 +373,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
         with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
-        display(tabla_latex)
+        # display(tabla_latex)
         print(3*'\n')
         tabla_in = tabla
         bucle = True
@@ -388,9 +388,10 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo', 'Intervalo de confianza']] + acondicionar_tabla(trans(new_valores_t+[medias,val_std,val_max,val_min,intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
             display(tabla_in)
-            display(tabla_latex)
+            # display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
+                print(lista)
                 val_provis = [ls for ls in lista if abs(ls-medias[pos])/val_std[pos] < num_g  or isnan(ls)] # or not isnan(abs(ls-medias[pos])/val_std[pos])
                 if len(val_provis) != len(new_valores[pos]) and bucle:
                     print([abs(ls-medias[pos])/val_std[pos] for ls in lista],num_g)
