@@ -256,25 +256,28 @@ def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '
         archivo.write(texto)
 
 
-def grubbs_test(data, alpha=0.05):
-    n = len(data)
-    mean = np.mean(data)
-    std_dev = np.std(data, ddof=1)  # Desviación estándar muestral
+def grubbs_test(lista, alpha=0.05):
+    new_lista = [i for i in lista if not isnan(i)]
+    n = len(new_lista)
+    mean = np.mean(new_lista)
+    std_dev = np.std(new_lista, ddof=1)  # Desviación estándar muestral
     
     # Calcular el estadístico de Grubbs
-    G = np.max(np.abs(data - mean)) / std_dev
+
+    G_max = max([abs(i - mean) / std_dev for i in new_lista])
+    val_g_max = [i for i in new_lista if abs(i - mean) / std_dev == G_max][0]
     
     # Calcular el valor crítico de Grubbs
     t_dist = stats.t.ppf(1 - alpha/(2*n), n-2)  # distribucion t
     G_critical = ((n-1) / np.sqrt(n)) * np.sqrt(t_dist**2 / (n-2 + t_dist**2))
     
-    return G, G_critical
+    return G_max > G_critical, val_g_max
 
 def grubbs_multiple(data, alpha=0.05):
     outliers = []
     while True:
-        G, G_critical = grubbs_test(data, alpha)
-        if G > G_critical:
+        G_max, G_critical = grubbs_test(data, alpha)
+        if G_max > G_critical:
             outlier = np.max(np.abs(data - np.mean(data)))
             outliers.append(outlier)
             data.remove(outlier)  # Eliminar el outlier detectado
@@ -369,8 +372,7 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
             archivo.write(texto)
         display(tabla_latex)
         tabla_in = tabla
-        bucle = True
-        bucle_end = True
+        bucle_end = []
         contador = 0
         while True:
             if contador == 0:
@@ -413,14 +415,13 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 if val_std[pos] != 0:
-                    val_provis = [ls for ls in lista if abs(ls-medias[pos])/(val_std[pos] / num_mostres **0.5) < num_g  or isnan(ls)] # or not isnan(abs(ls-medias[pos])/val_std[pos])
-                    if len(val_provis) != len(new_valores[pos]) and bucle:
-                        new_valores[pos] = [ls if abs(ls-medias[pos])/(val_std[pos] / num_mostres **0.5) < num_g else np.nan for ls in lista]
-                        bucle_end = False
-            if bucle_end:
+                    condicion_G, val_g_max = grubbs_test(data = lista, alpha = alfa)
+                    bucle_end.append(condicion_G)
+                    if condicion_G:
+                        new_valores[pos] = [np.nan if ls == val_g_max else ls for ls in lista]
+            if True in bucle_end:
                 break
-            else:
-                bucle_end = True
+
             tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
             texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
             texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
