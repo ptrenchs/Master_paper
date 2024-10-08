@@ -372,7 +372,10 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
         with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
-        display(tabla_latex)
+        try:
+            display(tabla_latex)
+        except:
+            pass
         tabla_in = tabla
         bucle_end = []
         contador = 0
@@ -413,7 +416,10 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                 intervalo_confianza.append(str(val_significativa(val = limite_inferior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)) + ' - ' + str(val_significativa(val = limite_superior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)))
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo', 'Intervalo de confianza', 'Intervalo']] + acondicionar_tabla(trans(new_valores_t+[medias, val_std, val_max, val_min, intervalo_confianza_mes_menys, intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
-            display(tabla_latex)
+            try:
+                display(tabla_latex)
+            except:
+                pass
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 if val_std[pos] != 0:
@@ -486,7 +492,10 @@ def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.', left = '
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
         with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
-        display(tabla_latex)
+        try:
+            display(tabla_latex)
+        except:
+            pass
     texto_main += crear_input(carpeta_latex, 'Discusión de Resultados')+ '\n'
     texto_main += crear_input(carpeta_latex, 'Conclusiones')+ '\n'
     crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
@@ -532,7 +541,10 @@ def ejercicio_oriol(ruta, cifras_sig = 3, separador_decimales = '.', left = '', 
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
         with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
-        display(tabla_latex)
+        try:
+            display(tabla_latex)
+        except:
+            pass
     texto_main += crear_input(carpeta_latex, 'Resultados (Incluyendo factores de conversión y justificando la eliminación de valores discrepantes)')+ '\n'
     texto_main += crear_input(carpeta_latex, 'Análisis, discusión de los resultados y conclusiones')+ '\n'
     crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
