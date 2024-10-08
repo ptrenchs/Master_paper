@@ -417,6 +417,7 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
             display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
+                print(val_std[pos])
                 if val_std[pos] != 0:
                     condicion_G, val_g_max = grubbs_test(lista = lista, alpha = alfa)
                     bucle_end.append(condicion_G)
