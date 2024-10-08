@@ -270,22 +270,22 @@ def grubbs_test(lista, alpha=0.05):
     # Calcular el valor crítico de Grubbs
     t_dist = stats.t.ppf(1 - alpha/(2*n), n-2)  # distribucion t
     G_critical = ((n-1) / np.sqrt(n)) * np.sqrt(t_dist**2 / (n-2 + t_dist**2))
-    print(str(G_max) + ' < ' + str(G_critical))
+    # print(str(G_max) + ' < ' + str(G_critical))
     if std_dev == 0:
         return False, val_g_max
     return G_max > G_critical, val_g_max
 
-def grubbs_multiple(data, alpha=0.05):
-    outliers = []
-    while True:
-        G_max, G_critical = grubbs_test(data, alpha)
-        if G_max > G_critical:
-            outlier = np.max(np.abs(data - np.mean(data)))
-            outliers.append(outlier)
-            data.remove(outlier)  # Eliminar el outlier detectado
-        else:
-            break
-    return outliers
+# def grubbs_multiple(data, alpha=0.05):
+#     outliers = []
+#     while True:
+#         G_max, G_critical = grubbs_test(data, alpha)
+#         if G_max > G_critical:
+#             outlier = np.max(np.abs(data - np.mean(data)))
+#             outliers.append(outlier)
+#             data.remove(outlier)  # Eliminar el outlier detectado
+#         else:
+#             break
+#     return outliers
 
 def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
