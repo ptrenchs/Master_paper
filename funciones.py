@@ -271,7 +271,6 @@ def grubbs_test(lista, alpha=0.05):
     t_dist = stats.t.ppf(1 - alpha/(2*n), n-2)  # distribucion t
     G_critical = ((n-1) / np.sqrt(n)) * np.sqrt(t_dist**2 / (n-2 + t_dist**2))
     print(str(G_max) + ' < ' + str(G_critical))
-    print(std_dev)
     if std_dev == 0:
         return False, val_g_max
     return G_max > G_critical, val_g_max
@@ -417,7 +416,6 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
             display(tabla_latex)
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
-                print(val_std[pos])
                 if val_std[pos] != 0:
                     condicion_G, val_g_max = grubbs_test(lista = lista, alpha = alfa)
                     bucle_end.append(condicion_G)
@@ -428,6 +426,8 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
 
             if True not in bucle_end:
                 break
+            else:
+                bucle_end = []
 
             tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
             texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
