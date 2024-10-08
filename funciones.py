@@ -270,7 +270,7 @@ def grubbs_test(lista, alpha=0.05):
     # Calcular el valor crítico de Grubbs
     t_dist = stats.t.ppf(1 - alpha/(2*n), n-2)  # distribucion t
     G_critical = ((n-1) / np.sqrt(n)) * np.sqrt(t_dist**2 / (n-2 + t_dist**2))
-    print(G_critical)
+    print(str(G_max) + ' < ' + str(G_critical))
     
     return G_max > G_critical, val_g_max
 
@@ -420,6 +420,8 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                     bucle_end.append(condicion_G)
                     if condicion_G:
                         new_valores[pos] = [np.nan if ls == val_g_max else ls for ls in lista]
+                else:
+                    bucle_end.append(False)
 
             if True not in bucle_end:
                 break
