@@ -297,7 +297,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
                     val_std.append(np.std(sec_float_no_nan,ddof=1))
                     val_max.append(max(sec_float))
                     val_min.append(min(sec_float))
-                    intervalo_confianza.append(str(val_significativa(np.mean(sec_float_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float_no_nan,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+                    intervalo_confianza.append(str(val_significativa(np.mean(sec_float_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float_no_nan,ddof=1) * valor_g * / num_mostres **0.5),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                     new_col.append(pal_antic)
                     
 
@@ -308,7 +308,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
                 val_std.append(np.std(tab_no_nan,ddof=1))
                 val_max.append(max(tab_no_nan))
                 val_min.append(min(tab_no_nan))
-                intervalo_confianza.append(str(val_significativa(np.mean(tab_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(tab_no_nan,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+                intervalo_confianza.append(str(val_significativa(np.mean(tab_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(tab_no_nan,ddof=1) * valor_g / num_mostres **0.5),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
                 sec_float = []
 
         if isfloat and len(sec_float) != 0:
@@ -320,7 +320,7 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             val_std.append(np.std(sec_float_no_nan,ddof=1))
             val_max.append(max(sec_float))
             val_min.append(min(sec_float))
-            intervalo_confianza.append(str(val_significativa(np.mean(sec_float_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float_no_nan,ddof=1) * valor_g),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
+            intervalo_confianza.append(str(val_significativa(np.mean(sec_float_no_nan),cifras_sig = cifras_sig, separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(abs(np.std(sec_float_no_nan,ddof=1) * valor_g / num_mostres **0.5),cifras_sig = cifras_sig, separador_decimales = separador_decimales)))
             new_col.append(pal_antic)
 
         # print(new_col)
@@ -393,9 +393,9 @@ def ejercicio_blanca(ruta, num_mostres = 5, cifras_sig = 3, separador_decimales 
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 if val_std[pos] != 0:
-                    val_provis = [ls for ls in lista if abs(ls-medias[pos])/val_std[pos] < num_g  or isnan(ls)] # or not isnan(abs(ls-medias[pos])/val_std[pos])
+                    val_provis = [ls for ls in lista if abs(ls-medias[pos])/(val_std[pos] / num_mostres **0.5) < num_g  or isnan(ls)] # or not isnan(abs(ls-medias[pos])/val_std[pos])
                     if len(val_provis) != len(new_valores[pos]) and bucle:
-                        new_valores[pos] = [ls if abs(ls-medias[pos])/val_std[pos] < num_g else np.nan for ls in lista]
+                        new_valores[pos] = [ls if abs(ls-medias[pos])/(val_std[pos] / num_mostres **0.5) < num_g else np.nan for ls in lista]
                         bucle_end = False
             if bucle_end:
                 break
