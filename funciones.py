@@ -387,9 +387,9 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
             intervalo_confianza_mes_menys = []
             intervalo_confianza = []
             for lista in new_valores:
-                media = media
-                v_std = v_std
-                lista_def = [i for i in lista_def if not isnan(i)]
+                lista_def = [i for i in lista if not isnan(i)]
+                media = np.mean(lista_def)
+                v_std = np.std(lista_def)
                 medias.append(media) 
                 val_std.append(v_std)
                 val_max.append(max(lista_def))
