@@ -419,6 +419,8 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                     bucle_end.append(condicion_G)
                     if condicion_G:
                         new_valores[pos] = [np.nan if ls == val_g_max else ls for ls in lista]
+            print(new_valores)
+            print(bucle_end)
             if True in bucle_end:
                 break
 
