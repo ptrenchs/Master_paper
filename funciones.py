@@ -225,7 +225,7 @@ def comandos_latex(ruta_carpeta):
 
 \\spacing{1.5}
 
-\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}'''
+\\addto\\captionsspanish{\\renewcommand{\\tablename}{Tabla}}'''
     with open(ruta_carpeta + '/' + 'comandos.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
 
