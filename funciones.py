@@ -21,21 +21,10 @@ def trans(tabla):
     return tabla_trans
 
 def leer_tabla(ruta , nombre = 'tabla 1'):
-    if type(ruta) == str:
-        tablas = pd.read_excel(ruta, sheet_name=None)
-        # Iterar sobre las hojas
-        nombres_hojas = []
-        all_tablas = []
-        for nombre_hoja, dataframe in tablas.items():
-            nombres_hojas.append(nombre_hoja.replace('-',' ').replace('_',' '))
-            all_tablas.append(dataframe)
-        return [nombres_hojas, all_tablas]
-    
-    if type(ruta) == pd.DataFrame:
-        tabla = ruta
-        col = [i for i in tabla.columns]
+
+    def passar_str_num(tabla):
         new_tabla = []
-        for lis in tabla.values:
+        for lis in [[i for i in tabla.columns]] + [i for i in tabla.values]:
             new_tabla.append([])
             for val in lis:
                 try:
@@ -44,7 +33,24 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
                     new_tabla[-1].append(new_val)
                 except:
                     new_tabla[-1].append(val)
-        return [[nombre],[pd.DataFrame(dict(zip(col,trans(new_tabla))))]]
+        return pd.DataFrame(dict(zip(new_tabla[0],trans(new_tabla[1:]))))
+
+    if type(ruta) == str:
+        tablas = pd.read_excel(ruta, sheet_name=None)
+        nombres_hojas = []
+        all_tablas = []
+        for nombre_hoja, dataframe in tablas.items():
+            nombres_hojas.append(nombre_hoja.replace('-',' ').replace('_',' '))
+            tabla = ruta
+            all_tablas.append(passar_str_num(dataframe))
+        return [nombres_hojas, all_tablas]
+    
+    if type(ruta) == pd.DataFrame:
+        tabla = ruta
+        nombres_hojas.append(nombre)
+        new_tabla = []
+        all_tablas.append(passar_str_num(tabla))
+        return [nombres_hojas, all_tablas]
 
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
     val_str = str(val).replace(',','.')
