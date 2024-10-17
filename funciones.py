@@ -439,7 +439,7 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                 pass
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
-                if val_std[pos] != 0 or val_std[pos] != isnan:
+                if val_std[pos] != 0 or not isnan(val_std[pos]):
                     condicion_G, val_g_max = grubbs_test(lista = lista, alpha = alfa)
                     bucle_end.append(condicion_G)
                     if condicion_G:
