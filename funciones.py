@@ -405,8 +405,8 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                     v_std = np.std(np.nan)
                     medias.append(np.nan) 
                     val_std.append(np.nan)
-                    val_max.append(max(np.nan))
-                    val_min.append(min(np.nan))
+                    val_max.append(np.nan)
+                    val_min.append(np.nan)
                     intervalo_confianza_mes_menys.append(np.nan)
                     intervalo_confianza.append(np.nan)
                 else:
