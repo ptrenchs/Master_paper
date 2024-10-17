@@ -400,27 +400,37 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
             intervalo_confianza = []
             for lista in new_valores:
                 lista_def = [i for i in lista if not isnan(i)]
-                media = np.mean(lista_def)
-                v_std = np.std(lista_def)
-                medias.append(media) 
-                val_std.append(v_std)
-                val_max.append(max(lista_def))
-                val_min.append(min(lista_def))
-                n = len(lista_def)
+                if lista_def == []:
+                    media = np.mean(np.nan)
+                    v_std = np.std(np.nan)
+                    medias.append(np.nan) 
+                    val_std.append(np.nan)
+                    val_max.append(max(np.nan))
+                    val_min.append(min(np.nan))
+                    intervalo_confianza_mes_menys.append(np.nan)
+                    intervalo_confianza.append(np.nan)
+                else:
+                    media = np.mean(lista_def)
+                    v_std = np.std(lista_def)
+                    medias.append(media) 
+                    val_std.append(v_std)
+                    val_max.append(max(lista_def))
+                    val_min.append(min(lista_def))
+                    n = len(lista_def)
 
-                # Definir el intervalo de confianza (por ejemplo, 95%)
-                
-                alfa = 1 - confianza
+                    # Definir el intervalo de confianza (por ejemplo, 95%)
+                    
+                    alfa = 1 - confianza
 
-                # Calcular el valor crítico para el intervalo de confianza deseado (distribución normal)
-                valor_critico = stats.norm.ppf(1 - alfa / 2)
+                    # Calcular el valor crítico para el intervalo de confianza deseado (distribución normal)
+                    valor_critico = stats.norm.ppf(1 - alfa / 2)
 
-                # Definir el intervalo de confianza usando la fórmula correcta
-                mes_menys = valor_critico * (v_std / np.sqrt(n))
-                limite_inferior = media - mes_menys
-                limite_superior = media + mes_menys
-                intervalo_confianza_mes_menys.append(str(val_significativa(val = media, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(val = v_std, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)))
-                intervalo_confianza.append(str(val_significativa(val = limite_inferior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)) + ' - ' + str(val_significativa(val = limite_superior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)))
+                    # Definir el intervalo de confianza usando la fórmula correcta
+                    mes_menys = valor_critico * (v_std / np.sqrt(n))
+                    limite_inferior = media - mes_menys
+                    limite_superior = media + mes_menys
+                    intervalo_confianza_mes_menys.append(str(val_significativa(val = media, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)) + ' +- ' + str(val_significativa(val = v_std, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)))
+                    intervalo_confianza.append(str(val_significativa(val = limite_inferior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)) + ' - ' + str(val_significativa(val = limite_superior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)))
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muetra '+str(i+1) for i in range(len(new_valores_t))] + ['medias','Desviacion estandard','valor maximo','valor minimo', 'Intervalo de confianza', 'Intervalo']] + acondicionar_tabla(trans(new_valores_t+[medias, val_std, val_max, val_min, intervalo_confianza_mes_menys, intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
             try:
@@ -429,7 +439,7 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                 pass
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
-                if val_std[pos] != 0:
+                if val_std[pos] != 0 or val_std[pos] != isnan:
                     condicion_G, val_g_max = grubbs_test(lista = lista, alpha = alfa)
                     bucle_end.append(condicion_G)
                     if condicion_G:
