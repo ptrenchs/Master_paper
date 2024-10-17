@@ -35,10 +35,12 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
                     new_tabla[-1].append(val)
         return pd.DataFrame(dict(zip(new_tabla[0],trans(new_tabla[1:]))))
 
+    nombres_hojas = []
+    all_tablas = []
+
     if type(ruta) == str:
         tablas = pd.read_excel(ruta, sheet_name=None)
-        nombres_hojas = []
-        all_tablas = []
+        
         for nombre_hoja, dataframe in tablas.items():
             nombres_hojas.append(nombre_hoja.replace('-',' ').replace('_',' '))
             tabla = ruta
@@ -48,7 +50,6 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
     if type(ruta) == pd.DataFrame:
         tabla = ruta
         nombres_hojas.append(nombre)
-        new_tabla = []
         all_tablas.append(passar_str_num(tabla))
         return [nombres_hojas, all_tablas]
 
