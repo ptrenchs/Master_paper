@@ -9,11 +9,11 @@ class  Directorio:
         self.rutas = rutas
 
 
-    def archivos(self):
-        return [os.path.join(self.ruta, item) for item in os.listdir(self.ruta) if os.path.isfile(os.path.join(self.ruta, item))]
+    def archivos(ruta):
+        return [os.path.join(ruta, item) for item in os.listdir(ruta) if os.path.isfile(os.path.join(ruta, item))]
     
-    def carpetas(self):
-        return [os.path.join(self.ruta, item) for item in os.listdir(self.ruta) if os.path.isdir(os.path.join(self.ruta, item))]
+    def carpetas(ruta):
+        return [os.path.join(ruta, item) for item in os.listdir(ruta) if os.path.isdir(os.path.join(ruta, item))]
     
     def all_archivos(self):
         archivos_all = []
@@ -21,8 +21,8 @@ class  Directorio:
         rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
-                archivos_all += Directorio(ruta=ruta).archivos()
-                carpetas_finales += Directorio(ruta=ruta).carpetas()
+                archivos_all += Directorio().archivos(ruta=ruta)
+                carpetas_finales += Directorio().carpetas(ruta=ruta)
             rutas = carpetas_finales
             carpetas_finales = []
         return archivos_all
@@ -33,7 +33,7 @@ class  Directorio:
         rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
-                carpetas_finales += Directorio(ruta=ruta).carpetas()
+                carpetas_finales += Directorio().carpetas(ruta=ruta)
             rutas = carpetas_finales
             carpetas_all += carpetas_finales
             carpetas_finales = []
