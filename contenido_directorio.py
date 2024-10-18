@@ -110,7 +110,7 @@ class Filtros_carpetas:
                     if '/' + carpeta +'/' in ruta:
                         break
 
-                if not ('/' + carpeta +'/' in ruta):
+                if '/' + carpeta +'/' not in ruta:
                     new_lista.append(ruta)
             return new_lista
         
