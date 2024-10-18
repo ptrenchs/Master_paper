@@ -45,7 +45,7 @@ class Filtros_formato:
              rutas = (rutas.replace(' ','').replace('\t','')).split(',')
         self.rutas = rutas
         if type(formatos)==str:
-             formatos = (formatos.replace(' ','').replace('\t','')).split(',')
+             formatos = (formatos.replace(' ','').replace('\t','').replace('.','')).split(',')
         self.formatos = formatos
     
 
