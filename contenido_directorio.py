@@ -84,7 +84,7 @@ class Filtros_carpetas:
              rutas = (rutas.replace(' ','').replace('\t','')).split(',')
         self.rutas = rutas
         if type(carpetas)==str:
-             rutas = (carpetas.replace(' ','').replace('\t','')).split(',')
+             carpetas = (carpetas.replace(' ','').replace('\t','')).split(',')
         self.carpetas = carpetas
 
 
