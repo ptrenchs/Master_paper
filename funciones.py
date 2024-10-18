@@ -571,3 +571,28 @@ def ejercicio_oriol(ruta, cifras_sig = 3, separador_decimales = '.', left = '', 
 
     # Crear el archivo ZIP
     shutil.make_archive(os.path.basename(carpeta_latex), 'zip', carpeta_latex)
+
+
+def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
+    formatos = ['xlsx']
+    nombres_profes = ['cr','bl','or']
+
+    for i,rut in enumerate(rutas):
+        nombre_archivos_formato = os.path.basename(rut)
+        if nombre_archivos_formato.split('.')[-1] in  formatos:
+            nombre_archivo = '.'.join(nombre_archivos_formato.split('.')[:-1])
+            for n_a in nombre_archivo.replace('\t',' ').replace('-',' ').replace('_',' ').spliet(' '):
+                for j,pr in enumerate(nombres_profes):
+                    if pr == n_a[:len(pr)].lower():
+                        break
+                if pr == n_a[:len(pr)].lower():
+                    break
+            if pr == n_a[:len(pr)].lower():
+                if j == 0:
+                    ejercicio_cristina(ruta = rut, cifras_sig = cifras_sig, separador_decimales = separador_decimales, left = left, center = center, right = right)
+                if j == 1:
+                    ejercicio_blanca(ruta = rut, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, left = left, center = center, right = right)
+                if j == 2:
+                    ejercicio_oriol(ruta = rut, cifras_sig = cifras_sig, separador_decimales = separador_decimales, left = left, center = center, right = right)
+            else:
+                print(f'Cambia el nombre del archivo siguiente {nombre_archivo} para uno que contenga el nombre del profesor:\nEjemplo:\n{nombre_archivo}_profesor\n\n')
