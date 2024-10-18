@@ -3,8 +3,11 @@ import shutil
 
 class  Directorio:
 
-    def __init__(self, ruta):
-        self.ruta = ruta
+    def __init__(self, rutas):
+        if type(rutas)==str:
+             rutas = (rutas.replace(' ','').replace('\t','')).split(',')
+        self.rutas = rutas
+
 
     def archivos(self):
         return [os.path.join(self.ruta, item) for item in os.listdir(self.ruta) if os.path.isfile(os.path.join(self.ruta, item))]
@@ -13,10 +16,9 @@ class  Directorio:
         return [os.path.join(self.ruta, item) for item in os.listdir(self.ruta) if os.path.isdir(os.path.join(self.ruta, item))]
     
     def all_archivos(self):
-        if type(self.ruta)==str:
-            rutas = (self.ruta.replace(' ','').replace('\t','')).split(',')
         archivos_all = []
         carpetas_finales = []
+        rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
                 archivos_all += Directorio(ruta=ruta).archivos()
@@ -26,10 +28,9 @@ class  Directorio:
         return archivos_all
     
     def all_carpetas(self):
-        if type(self.ruta)==str:
-            rutas = (self.ruta.replace(' ','').replace('\t','')).split(',')
         carpetas_all = []
         carpetas_finales = []
+        rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
                 carpetas_finales += Directorio(ruta=ruta).carpetas()
@@ -40,7 +41,11 @@ class  Directorio:
     
 class Filtros_formato:
     def __init__(self, rutas, formatos= ''):
+        if type(rutas)==str:
+             rutas = (rutas.replace(' ','').replace('\t','')).split(',')
         self.rutas = rutas
+        if type(formatos)==str:
+             formatos = (formatos.replace(' ','').replace('\t','')).split(',')
         self.formatos = formatos
     
 
@@ -50,7 +55,7 @@ class Filtros_formato:
             return new_lista
         else:
             for ruta in self.rutas:
-                for formato in (self.formatos.replace(' ','')).split(','):
+                for formato in self.formatos:
                     formato_ruta = ruta.split('.')[-1]
                     if formato_ruta.lower() == formato.lower():
                         new_lista.append(ruta)
@@ -63,7 +68,7 @@ class Filtros_formato:
             return new_lista
         else:
             for ruta in self.rutas:
-                for formato in (self.formatos.replace(' ','')).split(','):
+                for formato in self.formatos:
                     formato_ruta = ruta.split('.')[-1]
                     if formato_ruta.lower() == formato.lower():
                         break
@@ -75,7 +80,11 @@ class Filtros_formato:
 class Filtros_carpetas:
 
     def __init__(self, rutas, carpetas = ''):
+        if type(rutas)==str:
+             rutas = (rutas.replace(' ','').replace('\t','')).split(',')
         self.rutas = rutas
+        if type(carpetas)==str:
+             rutas = (carpetas.replace(' ','').replace('\t','')).split(',')
         self.carpetas = carpetas
 
 
@@ -85,7 +94,7 @@ class Filtros_carpetas:
             return self.rutas
         else:
             for ruta in self.rutas:
-                for carpeta in (self.carpetas.replace(' ','')).split(','):
+                for carpeta in self.carpetas:
                     if '/' + carpeta +'/' in ruta:
                         new_lista.append(ruta)
                         break
@@ -97,7 +106,7 @@ class Filtros_carpetas:
             return self.rutas
         else:
             for ruta in self.rutas:
-                for carpeta in (self.carpetas.replace(' ','')).split(','):
+                for carpeta in self.carpetas:
                     if '/' + carpeta +'/' in ruta:
                         break
 
@@ -109,8 +118,12 @@ class Filtros_carpetas:
         
 class Filtros_archivos:
 
-    def __init__(self, rutas, archivos = '', archivos_eliminados = ''):
+    def __init__(self, rutas, archivos = ''):
+        if type(rutas)==str:
+             rutas = (rutas.replace(' ','').replace('\t','')).split(',')
         self.rutas = rutas
+        if type(archivos)==str:
+             archivos = (archivos.replace(' ','').replace('\t','')).split(',')
         self.archivos = archivos
 
     def elejir(self):
@@ -119,7 +132,7 @@ class Filtros_archivos:
             return new_lista
         else:
             for ruta in self.rutas:
-                for arch in (self.archivos.replace(' ','')).split(','):
+                for arch in self.archivos:
                     nombre_archivo = '.'.join(os.path.basename(ruta).split('.')[:-1])
                     if nombre_archivo == arch:
                         new_lista.append(ruta)
@@ -132,7 +145,7 @@ class Filtros_archivos:
             return new_lista
         else:
             for ruta in self.rutas:
-                for arch in (self.archivos.replace(' ','')).split(','):
+                for arch in self.archivos:
                     nombre_archivo = '.'.join(os.path.basename(ruta).split('.')[:-1])
                     if nombre_archivo == arch:
                         break
@@ -142,6 +155,8 @@ class Filtros_archivos:
 
 class ordenar_directorio:
     def __init__(self,rutas):
+        if type(rutas)==str:
+             rutas = (rutas.replace(' ','').replace('\t','')).split(',')
         self.rutas = rutas
 
     def ordenar(self):
