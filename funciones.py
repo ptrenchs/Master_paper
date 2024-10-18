@@ -581,7 +581,7 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
         nombre_archivos_formato = os.path.basename(rut)
         if (nombre_archivos_formato.split('.')[-1]).lower() in  [forma.lower() for forma in formatos]:
             nombre_archivo = '.'.join(nombre_archivos_formato.split('.')[:-1])
-            for n_a in nombre_archivo.replace('\t',' ').replace('-',' ').replace('_',' ').spliet(' '):
+            for n_a in nombre_archivo.replace('\t',' ').replace('-',' ').replace('_',' ').split(' '):
                 for j,pr in enumerate(nombres_profes):
                     if pr == n_a[:len(pr)].lower():
                         break
