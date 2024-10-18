@@ -21,8 +21,8 @@ class  Directorio:
         rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
-                archivos_all += Directorio().archivos(ruta=ruta)
-                carpetas_finales += Directorio().carpetas(ruta=ruta)
+                archivos_all += Directorio.archivos(ruta=ruta)
+                carpetas_finales += Directorio.carpetas(ruta=ruta)
             rutas = carpetas_finales
             carpetas_finales = []
         return archivos_all
@@ -33,7 +33,7 @@ class  Directorio:
         rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
-                carpetas_finales += Directorio().carpetas(ruta=ruta)
+                carpetas_finales += Directorio.carpetas(ruta=ruta)
             rutas = carpetas_finales
             carpetas_all += carpetas_finales
             carpetas_finales = []
