@@ -175,7 +175,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \\hline\n'
     texto_tabla += fila_def
-    texto_tabla += '\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','-').replace('_','-') + '}\n\\end{table}\n\n\n'
+    texto_tabla += '\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','_').replace('-','_') + '}\n\\end{table}\n\n\n'
 
 
     return texto_tabla
@@ -230,21 +230,23 @@ def comandos_latex(ruta_carpeta):
     with open(ruta_carpeta + '/' + 'comandos.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
 
-def crear_include(ruta_carpeta, texto):
+def crear_include_or_input(texto, posicion = '', ruta_carpeta = '', tipo = 'include'):
     if type(texto) == list:
-        texto = '\n'.join(texto)
+        texto = ' '.join(texto)
 
-    with open(ruta_carpeta + '/' + texto.replace(' ','_').replace('-',' ') +'.tex', 'w', encoding='utf-8') as archivo:
-        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'}\n')
-    return '\\include{' + texto.replace(' ','_').replace('-',' ') + '}'
+    tex_label = texto.replace(' ','_').replace('-','_').replace('\t','_')
+    if posicion != '':
+        nombre_archivo = str(posicion) + '_' + tex_label
+    if ruta_carpeta != '':
+        nombre_archivo = ruta_carpeta + '/' +  nombre_archivo
+    texto_include = nombre_archivo.split('/')
+    if 1 < len(texto_include):
+        texto_include = '/'.join(texto_include.split('/')[1:])
 
-def crear_input(ruta_carpeta, texto):
-    if type(texto) == list:
-        texto = '\n'.join(texto)
+    with open(nombre_archivo +'.tex', 'w', encoding='utf-8') as archivo:
+        archivo.write('\\section{' + tex_label.replace('_', ' ') + '} \\label{sec:' + tex_label +'}\n')
+    return '\\' + tipo + '{' + texto_include + '}'
 
-    with open(ruta_carpeta + '/' + texto.replace(' ','_').replace('-',' ') +'.tex', 'w', encoding='utf-8') as archivo:
-        archivo.write('\\section{' + texto.replace('-',' ').replace('_', ' ') + '} \\label{sec:' + texto.replace(' ','-').replace('_', '-') +'}\n')
-    return '\\input{' + texto.replace(' ','_').replace('-',' ') + '}'
 
 def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '\\today'):
     if type(texto_medio) == list:
@@ -282,17 +284,6 @@ def grubbs_test(lista, alpha=0.05):
         return False, val_g_max
     return G_max > G_critical, val_g_max
 
-# def grubbs_multiple(data, alpha=0.05):
-#     outliers = []
-#     while True:
-#         G_max, G_critical = grubbs_test(data, alpha)
-#         if G_max > G_critical:
-#             outlier = np.max(np.abs(data - np.mean(data)))
-#             outliers.append(outlier)
-#             data.remove(outlier)  # Eliminar el outlier detectado
-#         else:
-#             break
-#     return outliers
 
 def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
 
@@ -350,13 +341,14 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
     carpeta_latex = crear_carpeta(ruta = '', nombre_carpeta = nombre_archivo)
     crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
     comandos_latex(carpeta_latex)
+    # crear_include_or_input(texto, posicion = '', ruta_carpeta = '', tipo = 'include')
     texto_main = ''
-    texto_main += crear_input(carpeta_latex, 'Objetivo y principio de la práctica') + '\n'
-    texto_main += crear_input(carpeta_latex, 'Muestra papel')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Normas a considerar')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Aparatos utilizados')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Condiciones ambientales')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
+    texto_main += crear_include_or_input(posicion = 1, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Objetivo y principio de la práctica') + '\n'
+    texto_main += crear_include_or_input(posicion = 2, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Muestra papel')+ '\n'
+    texto_main += crear_include_or_input(posicion = 3, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Normas a considerar')+ '\n'
+    texto_main += crear_include_or_input(posicion = 4, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Aparatos utilizados')+ '\n'
+    texto_main += crear_include_or_input(posicion = 5, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Condiciones ambientales')+ '\n'
+    texto_main += crear_include_or_input(posicion = 6, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Medidas')+ '\n'
     
 
     nombres,tablas = leer_tabla(ruta)
@@ -463,8 +455,8 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
-    texto_main += crear_input(carpeta_latex, 'Otros alumnos')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Observaciones')+ '\n'
+    texto_main += crear_include_or_input(posicion = 7, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Otros alumnos')+ '\n'
+    texto_main += crear_include_or_input(posicion = 8, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Observaciones')+ '\n'
     crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
 
 
@@ -481,12 +473,12 @@ def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.', left = '
     crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
     comandos_latex(carpeta_latex)
     texto_main = ''
-    texto_main += crear_input(carpeta_latex, 'Introducción teórica') + '\n'
-    texto_main += crear_input(carpeta_latex, 'Objetivo de la práctica')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Materiales y métodos')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Resultados')+ '\n'
-    # texto_main += crear_input(carpeta_latex, 'Condiciones ambientales')+ '\n'
-    # texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
+    texto_main += crear_include_or_input(posicion = 1, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Introducción teórica') + '\n'
+    texto_main += crear_include_or_input(posicion = 2, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Objetivo de la práctica')+ '\n'
+    texto_main += crear_include_or_input(posicion = 3, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Materiales y métodos')+ '\n'
+    texto_main += crear_include_or_input(posicion = 4, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Resultados')+ '\n'
+    # texto_main += crear_include_or_input(posicion = 1, tipo = 'input', ruta_carpeta = carpeta_latex, 'Condiciones ambientales')+ '\n'
+    # texto_main += crear_include_or_input(posicion = 1, tipo = 'input', ruta_carpeta = carpeta_latex, 'Medidas')+ '\n'
     
 
     nombres,tablas = leer_tabla(ruta)
@@ -513,8 +505,8 @@ def ejercicio_cristina(ruta, cifras_sig = 3, separador_decimales = '.', left = '
             display(tabla_latex)
         except:
             pass
-    texto_main += crear_input(carpeta_latex, 'Discusión de Resultados')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Conclusiones')+ '\n'
+    texto_main += crear_include_or_input(posicion = 5, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Discusión de Resultados')+ '\n'
+    texto_main += crear_include_or_input(posicion = 6, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Conclusiones')+ '\n'
     crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
 
 
@@ -531,11 +523,11 @@ def ejercicio_oriol(ruta, cifras_sig = 3, separador_decimales = '.', left = '', 
     crear_carpeta(ruta = carpeta_latex, nombre_carpeta = 'carpeta_img')
     comandos_latex(carpeta_latex)
     texto_main = ''
-    texto_main += crear_input(carpeta_latex, 'Objetivo de la práctica')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Material utilizado')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Normativa aplicable o a tener en cuenta')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Datos experimentales obtenidos (medidas directas obtenidas en el laboratorio)')+ '\n'
-    # texto_main += crear_input(carpeta_latex, 'Medidas')+ '\n'
+    texto_main += crear_include_or_input(posicion = 1, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Objetivo de la práctica')+ '\n'
+    texto_main += crear_include_or_input(posicion = 2, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Material utilizado')+ '\n'
+    texto_main += crear_include_or_input(posicion = 3, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Normativa aplicable o a tener en cuenta')+ '\n'
+    texto_main += crear_include_or_input(posicion = 4, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Datos experimentales obtenidos (medidas directas obtenidas en el laboratorio)')+ '\n'
+    # texto_main += crear_include_or_input(posicion = 1, tipo = 'input', ruta_carpeta = carpeta_latex, 'Medidas')+ '\n'
     
 
     nombres,tablas = leer_tabla(ruta)
@@ -562,8 +554,8 @@ def ejercicio_oriol(ruta, cifras_sig = 3, separador_decimales = '.', left = '', 
             display(tabla_latex)
         except:
             pass
-    texto_main += crear_input(carpeta_latex, 'Resultados (Incluyendo factores de conversión y justificando la eliminación de valores discrepantes)')+ '\n'
-    texto_main += crear_input(carpeta_latex, 'Análisis, discusión de los resultados y conclusiones')+ '\n'
+    texto_main += crear_include_or_input(posicion = 5, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Resultados (Incluyendo factores de conversión y justificando la eliminación de valores discrepantes)')+ '\n'
+    texto_main += crear_include_or_input(posicion = 6, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Análisis, discusión de los resultados y conclusiones')+ '\n'
     crear_main_latex(carpeta_latex, texto_main, left = left, center = center, right = right)
 
 
