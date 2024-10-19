@@ -241,7 +241,7 @@ def crear_include_or_input(texto, posicion = '', ruta_carpeta = '', tipo = 'incl
         nombre_archivo = ruta_carpeta + '/' +  nombre_archivo
     texto_include = nombre_archivo.split('/')
     if 1 < len(texto_include):
-        texto_include = '/'.join(texto_include.split('/')[1:])
+        texto_include = '/'.join(texto_include[1:])
 
     with open(nombre_archivo +'.tex', 'w', encoding='utf-8') as archivo:
         archivo.write('\\section{' + tex_label.replace('_', ' ') + '} \\label{sec:' + tex_label +'}\n')
