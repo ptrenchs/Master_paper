@@ -175,7 +175,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \\hline\n'
     texto_tabla += fila_def
-    texto_tabla += '\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','_').replace('-','_') + '}\n\\end{table}\n\n\n'
+    texto_tabla += '\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','_').replace('-','_').replace('\t','_') + '}\n\\end{table}\n\n\n'
 
 
     return texto_tabla
@@ -565,7 +565,7 @@ def ejercicio_oriol(ruta, cifras_sig = 3, separador_decimales = '.', left = '', 
     shutil.make_archive(os.path.basename(carpeta_latex), 'zip', carpeta_latex)
 
 
-def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales = '.', left = '', center = '', right = '\\today'):
+def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales = '.', left = 'Practica', center = '', right = '\\today'):
     formatos = ['xlsx']
     nombres_profes = ['cr','bl','or']
 
@@ -573,13 +573,26 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
         nombre_archivos_formato = os.path.basename(rut)
         if (nombre_archivos_formato.split('.')[-1]).lower() in  [forma.lower() for forma in formatos]:
             nombre_archivo = '.'.join(nombre_archivos_formato.split('.')[:-1])
-            for n_a in nombre_archivo.replace('\t',' ').replace('-',' ').replace('_',' ').split(' '):
+            nombre_practica_split = nombre_archivo.replace('\t',' ').replace('-',' ').replace('_',' ').split(' ')
+            for k,n_a in enumerate(nombre_practica_split):
                 for j,pr in enumerate(nombres_profes):
-                    if pr == n_a[:len(pr)].lower():
+                    if pr.lower() == n_a[:len(pr)].lower():
                         break
-                if pr == n_a[:len(pr)].lower():
+                if pr.lower() == n_a[:len(pr)].lower():
                     break
-            if pr == n_a[:len(pr)].lower():
+            if pr.lower == n_a[:len(pr)].lower():
+                print(' '.join(nombre_practica_split))
+                nombre_practica = ' '.join(nombre_practica_split.remove(nombre_practica_split[k]))
+                if left != '':
+                    if left[:len('pra')].lower() == 'pra':
+                        left = nombre_practica
+                if center != '':
+                    if center[:len('pra')].lower() == 'pra':
+                        center = nombre_practica
+                if right != '':
+                    if right[:len('pra')].lower() == 'pra':
+                        right = nombre_practica
+
                 if j == 0:
                     ejercicio_cristina(ruta = rut, cifras_sig = cifras_sig, separador_decimales = separador_decimales, left = left, center = center, right = right)
                 if j == 1:
@@ -588,3 +601,4 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
                     ejercicio_oriol(ruta = rut, cifras_sig = cifras_sig, separador_decimales = separador_decimales, left = left, center = center, right = right)
             else:
                 print(f'Cambia el nombre del archivo siguiente {nombre_archivo} para uno que contenga el nombre del profesor:\nEjemplo:\n{nombre_archivo}_profesor\n\n')
+            print(4*'\n')
