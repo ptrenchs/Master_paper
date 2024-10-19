@@ -580,7 +580,7 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
                         break
                 if pr.lower() == n_a[:len(pr)].lower():
                     break
-            if pr.lower == n_a[:len(pr)].lower():
+            if pr.lower() == n_a[:len(pr)].lower():
                 print(' '.join(nombre_practica_split))
                 nombre_practica = ' '.join(nombre_practica_split.remove(nombre_practica_split[k]))
                 if left != '':
