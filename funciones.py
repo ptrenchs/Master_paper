@@ -5,8 +5,10 @@ import scipy.stats as stats
 import os
 import shutil
 
-def trans(tabla):
-    tabla = [[j for j in i] for i in tabla]
+def trans(tabla_original):
+    tabla = [[j for j in i] for i in tabla_original]
+    if tabla == []:
+        return tabla
     tabla_trans = []
     len_list = max([len(i) for i in tabla])
     new_tabla = []
