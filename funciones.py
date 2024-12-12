@@ -787,18 +787,28 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
                 print(f'Cambia el nombre del archivo siguiente {nombre_archivo} para uno que contenga el nombre del profesor:\nEjemplo:\n{nombre_archivo}_profesor\n\n')
             print(4*'\n')
 
-ruta = '/home/ptrenchs/Descargas/Trabajo-20241211T094234Z-001/'
+ruta = '/home/pol-trenchs/Descargas/Trabajo-20241211T193839Z-001/Trabajo'
 if str.endswith(ruta,'/'):
     ruta = ruta[:-1]
 titulo_1 = os.path.basename(ruta)  # '/' + titulo_1 + '/'
 all = Directorio(rutas=ruta)
 all_rutas = Filtros_formato(rutas= all.all_archivos(),formatos='xlsx').elejir()
+all_carp = all.all_carpetas()
 # all_carpetas = all.all_carpetas()
 all_titulos = []
-for rt in all_rutas:
+for rt in all_rutas + all_carp:
     rt_split = rt.split('/')
     all_titulos.append(rt_split[len(rt_split)-[i for i,r in enumerate(rt_split[::-1]) if r == titulo_1][0]:])
-# print(all_titulos)
+# print(trans(all_titulos))
+all_rutas_t = []
+for i in trans(all_titulos):
+    sub_ = []
+    for j in i:
+        try:
+            isnan(j)
+        except:
+            sub_.append(j)
+    all_rutas_t.append(list(set(sub_)))
 
-print(dict(zip([f'titulo {i+2}' for i in range(4-1)],[list(set(i)) for i in trans(all_titulos)])))
+print(dict(zip([f'titulo {i+2}' for i in range(4-1)],all_rutas_t)))
     
