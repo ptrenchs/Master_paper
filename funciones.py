@@ -7,6 +7,7 @@ import shutil
 
 
 # --------------------------------------------------------
+
 class  Directorio:
 
     def __init__(self, rutas):
@@ -14,35 +15,52 @@ class  Directorio:
              rutas = (rutas.replace(' ','').replace('\t','')).split(',')
         self.rutas = rutas
 
+    def ordenar_lista_num(lista):
+        lista_ordenada = []
+        lista_no_ordenada = [i for i in lista]
+        if lista == []:
+            return []
+        for orde in [str(i) for i in range(len(lista) + 1)]:
+            for lso in lista:
+                if '/' in lso:
+                    nombre_carp = os.path.basename(lso).replace(' ','_').replace('-','_')
+                    if '.' in nombre_carp:
+                        nombre_carp = '.'.join(nombre_carp.split('.')[:-1])
+                else:
+                    nombre_carp = lso.replace(' ','_').replace('-','_')
+                if nombre_carp.split('_')[0] == orde or nombre_carp.split('_')[-1] == orde:
+                    lista_ordenada.append(lso)
+                    lista_no_ordenada.remove(lso)
+        return lista_ordenada + lista_no_ordenada
 
     def archivos(ruta):
-        return [os.path.join(ruta, item) for item in os.listdir(ruta) if os.path.isfile(os.path.join(ruta, item))]
+        return Directorio.ordenar_lista_num([os.path.join(ruta, item) for item in os.listdir(ruta) if os.path.isfile(os.path.join(ruta, item))])
     
     def carpetas(ruta):
-        return [os.path.join(ruta, item) for item in os.listdir(ruta) if os.path.isdir(os.path.join(ruta, item))]
+        return Directorio.ordenar_lista_num([os.path.join(ruta, item) for item in os.listdir(ruta) if os.path.isdir(os.path.join(ruta, item))])
     
     def all_archivos(self):
         archivos_all = []
-        carpetas_finales = []
+        lista = []
         rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
                 archivos_all += Directorio.archivos(ruta=ruta)
-                carpetas_finales += Directorio.carpetas(ruta=ruta)
-            rutas = carpetas_finales
-            carpetas_finales = []
+                lista += Directorio.carpetas(ruta=ruta)
+            rutas = lista
+            lista = []
         return archivos_all
     
     def all_carpetas(self):
         carpetas_all = []
-        carpetas_finales = []
+        lista = []
         rutas = [i for i in self.rutas]
         while rutas != []:
             for ruta in rutas:
-                carpetas_finales += Directorio.carpetas(ruta=ruta)
-            rutas = carpetas_finales
-            carpetas_all += carpetas_finales
-            carpetas_finales = []
+                lista += Directorio.carpetas(ruta=ruta)
+            rutas = lista
+            carpetas_all += lista
+            lista = []
         return carpetas_all
     
 class Filtros_formato:
@@ -787,28 +805,57 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
                 print(f'Cambia el nombre del archivo siguiente {nombre_archivo} para uno que contenga el nombre del profesor:\nEjemplo:\n{nombre_archivo}_profesor\n\n')
             print(4*'\n')
 
-ruta = '/home/pol-trenchs/Descargas/Trabajo-20241211T193839Z-001/Trabajo'
-if str.endswith(ruta,'/'):
-    ruta = ruta[:-1]
-titulo_1 = os.path.basename(ruta)  # '/' + titulo_1 + '/'
-all = Directorio(rutas=ruta)
-all_rutas = Filtros_formato(rutas= all.all_archivos(),formatos='xlsx').elejir()
-all_carp = all.all_carpetas()
-# all_carpetas = all.all_carpetas()
-all_titulos = []
-for rt in all_rutas + all_carp:
-    rt_split = rt.split('/')
-    all_titulos.append(rt_split[len(rt_split)-[i for i,r in enumerate(rt_split[::-1]) if r == titulo_1][0]:])
-# print(trans(all_titulos))
-all_rutas_t = []
-for i in trans(all_titulos):
-    sub_ = []
-    for j in i:
-        try:
-            isnan(j)
-        except:
-            sub_.append(j)
-    all_rutas_t.append(list(set(sub_)))
+ruta_ini = '/home/pol-trenchs/Descargas/Trabajo-20241211T193839Z-001/Trabajo'
+if str.endswith(ruta_ini,'/'):
+    ruta_ini = ruta_ini[:-1]
+titulo_1 = os.path.basename(ruta_ini)  # '/' + titulo_1 + '/'
 
-print(dict(zip([f'titulo {i+2}' for i in range(4-1)],all_rutas_t)))
+def ordenar_lista_num(lista):
+    lista_ordenada = []
+    lista_no_ordenada = []
+    for lso in lista:
+        for orde in [str(i) for i in range(len(lista) + 1)]:
+            if '/' in lso:
+                nombre_carp = os.path.basename(lso).replace(' ','_').replace('-','_')
+            else:
+                nombre_carp = lso
+            if nombre_carp.split('_')[0] == orde or nombre_carp.split('_')[-1] == orde:
+                lista_ordenada.append(lso)
+                break
+        if not (nombre_carp.split('_')[0] == orde or nombre_carp.split('_')[-1] == orde):
+            lista_no_ordenada.append(lso)
+    return lista_ordenada + lista_no_ordenada
+
+all = Directorio(rutas=ruta_ini)
+all_rutas = Filtros_formato(rutas= all.all_archivos(),formatos='xlsx').elejir()
+[[print(j) for j in Directorio.archivos(i)] if Directorio.archivos(i) != [] else print(i) for i in all.all_carpetas()]
+# [print(i)for i in all.all_carpetas()]
+# print(Directorio.carpetas(ruta=ruta_ini))
+
+# all_carp = all.all_carpetas()
+# # all_carpetas = all.all_carpetas()
+# all_titulos = []
+# for rt in all_rutas + all_carp:
+#     rt_split = rt.split('/')
+#     all_titulos.append(rt_split[len(rt_split)-[i for i,r in enumerate(rt_split[::-1]) if r == titulo_1][0]:])
+# # print(trans(all_titulos))
+# all_rutas_t = []
+# for i in trans(all_titulos):
+#     sub_ = []
+#     for j in i:
+#         try:
+#             isnan(j)
+#         except:
+#             sub_.append(j)
+#     lits_sin_ordenar = list(set(sub_))
+#     lits_ordenada = []
+#     for orde in [str(i) for i in range(len(lits_sin_ordenar) + 1)]:
+#         for lso in lits_sin_ordenar:
+#             if lso.startwith(orde) or lso.endwiht(orde):
+#                 lits_ordenada.append(lso)
+#                 break
+
+#     all_rutas_t.append(list(set(sub_)))
+
+# print(dict(zip([f'titulo {i+2}' for i in range(4-1)],all_rutas_t)))
     
