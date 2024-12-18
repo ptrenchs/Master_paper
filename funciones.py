@@ -289,16 +289,19 @@ def schopper_corr(tabla,nombre,ruta):
         if x == 0 or y == 0:
             pass
         else:
-            dist = [np.polyval(coef,x) - y for coef in new_reg]
-            pos_min = [abs(i) for i in dist].index(min(np.abs(dist)))
-            y_min = np.polyval(new_reg[pos_min],x)
-            dist = [dist[i] for i in range(len(dist)) if i != pos_min]
+            new_reg_min = [new_reg[i] for i in range(len(new_reg))]
+            dist_1 = [np.polyval(coef,x) - y for coef in new_reg_min]
+            pos_min = [abs(i) for i in dist_1].index(min(np.abs(dist_1)))
+            y_min = np.polyval(new_reg_min[pos_min],x)
+            new_reg_max = [new_reg[i] for i in range(len(new_reg)) if i != pos_min]
+            dist_2 = [np.polyval(coef,x) - y for coef in new_reg_max]
             # print(dist)
-            pos_max = [abs(i) for i in dist].index(min(np.abs(dist)))
-            y_max = np.polyval(new_reg[pos_max],x)
+            pos_max = [abs(i) for i in dist_2].index(min(np.abs(dist_2)))
+            y_max = np.polyval(new_reg_max[pos_max],x)
             # print(y_min,y_max)
-            y_min_masa = np.polyval(new_reg[pos_min],x_masa)
-            y_max_masa = np.polyval(new_reg[pos_max],x_masa)
+            y_min_masa = np.polyval(new_reg_min[pos_min],x_masa)
+            y_max_masa = np.polyval(new_reg_max[pos_max],x_masa)
+            # print(y_max, y_min,y)
             y_masa_corregida = y_max_masa - (y_max - y) / (y_max - y_min) * (y_max_masa - y_min_masa)# (y_max - y) / (y_max - y_min) = (y_max_masa - y_masa_corregida) / (y_max_masa - y_min_masa)
             # print(y_masa_corregida)
             y_masa_corregida_list.append(y_masa_corregida)
