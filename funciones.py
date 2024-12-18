@@ -315,8 +315,8 @@ def schopper_corr(tabla,nombre,ruta):
     # print(new_col)
     if y_masa_corregida_list != []:
         new_tab = []
-        for i in datos_:
-            new_tab.append([j for j in i] + [y_masa_corregida])
+        for i in range(len(datos_)):
+            new_tab.append([j for j in datos_[i]] + [y_masa_corregida_list[i]])
         return pd.DataFrame(dict(zip(new_col,trans(new_tab))))
     else:
         return tabla
