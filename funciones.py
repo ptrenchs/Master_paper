@@ -659,7 +659,7 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
         nombre_inicio = nombres[pos_tab] + ' inicio'
-        tabla_t =trans(acondicionar_tabla(schopper_corr(tabla).values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
+        tabla_t =trans(acondicionar_tabla(schopper_corr(tabla=tabla,nombre=nombres[pos_tab],ruta = '').values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
         tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla.columns],[['muestra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
