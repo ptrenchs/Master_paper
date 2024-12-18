@@ -281,7 +281,7 @@ def schopper_corr(tabla,nombre,ruta):
         # plt.plot(new_x,new_y,label=col_gr)
         plt.plot(new_x,new_y)
 
-
+    y_masa_corregida_list = []
     pos_x = [i for i in range(len(col_)) if 'mas' in col_[i].lower()]
     for num,punt in enumerate(datos_):
         x = punt[pos_x[0]]
@@ -301,6 +301,7 @@ def schopper_corr(tabla,nombre,ruta):
             y_max_masa = np.polyval(new_reg[pos_max],x_masa)
             y_masa_corregida = y_max_masa - (y_max - y) / (y_max - y_min) * (y_max_masa - y_min_masa)# (y_max - y) / (y_max - y_min) = (y_max_masa - y_masa_corregida) / (y_max_masa - y_min_masa)
             # print(y_masa_corregida)
+            y_masa_corregida_list.append(y_masa_corregida)
             plt.scatter(x,y,label=f'muestra {num+1}')
             plt.scatter(x_masa,y_masa_corregida,label=f'muestra {num+1} corregido')
     plt.xlabel(col_[pos_x[0]])
@@ -309,12 +310,12 @@ def schopper_corr(tabla,nombre,ruta):
     plt.tight_layout()
     new_col = [j for j in col_] + ['Schopper corregido']
     # print(new_col)
-    try:
+    if y_masa_corregida_list != []:
         new_tab = []
         for i in datos_:
             new_tab.append([j for j in i] + [y_masa_corregida])
         return pd.DataFrame(dict(zip(new_col,trans(new_tab))))
-    except:
+    else:
         return tabla
 
 def leer_tabla(ruta , nombre = 'tabla 1'):
