@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from math import isnan
 import scipy.stats as stats
 import os
@@ -226,6 +227,92 @@ def trans(tabla_original):
             else:
                 tabla_trans[i].append(new_tabla[j][i])
     return tabla_trans
+
+def schopper_corr(tabla,nombre,ruta):
+    x_masa = 2
+    nombre_arch_spe = ('.'.join(os.path.basename(ruta).split('.')[:-1])).replace('_',' ').replace('-',' ')
+    nombre_arch_sub_bar = nombre_arch_spe.replace(' ','_')
+    nombre_spe = nombre.replace('_',' ').replace('-',' ')
+    nombre_sub_bar = nombre_spe.replace(' ','_')
+    nombre_arch_spe_t = ' '.join([i for i in nombre_arch_spe.split(' ')if not str.isdigit(i)])
+
+    col_,datos_ = tabla.columns,tabla.values
+    if len(tabla.values) == 0:
+        return tabla
+    pos_y = [i for i in range(len(col_)) if 'schopper' in col_[i].lower()]
+    # print(pos_y)
+    if len(pos_y) == 0:
+        return tabla
+
+    tabla_gr = pd.read_csv('https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Oriol-Tecnologia%20de%20la%20fabricacio%20de%20paper/practicas_laboratorio/tablas_grafica_oriol.csv')
+    col_gr,datos = tabla_gr.columns,trans(tabla_gr.values)
+    pos_x = [i for i,c in enumerate(col_gr) if 'x' in c.lower()][0]
+    x_in = np.array(datos[pos_x])
+    all_y = [d for i,d in enumerate(datos) if i != pos_x]
+    new_reg = []
+    plt.figure(figsize=(10,6))
+    plt.title(nombre_arch_spe_t + '-' + nombre_spe)
+    for y_in in all_y:
+        y = np.array([i for i in y_in if not isnan(i)])
+        # len_y = len(y)
+        # print(y)
+        # x_in
+        x = x_in[:len(y)]
+        n = 1
+        while True:
+            coef = np.polyfit(x,y,deg = n)
+            y_ajustado = np.polyval(coef,x)
+
+            ss_res = np.sum((y - y_ajustado) ** 2)
+
+            # SS_tot es la suma total de los cuadrados (respecto a la media de y)
+            ss_tot = np.sum((y - np.mean(y)) ** 2)
+
+            # R^2
+            r2 = 1 - (ss_res / ss_tot)
+
+            if 0.9985 < r2 and 0 < r2:
+                break
+            n += 1
+        new_reg.append(coef)
+        # plt.scatter(x,y,label=col_gr)
+        new_x = np.linspace(min(x), max(x), 100)
+        new_y = np.polyval(coef,new_x)
+        # plt.plot(new_x,new_y,label=col_gr)
+        plt.plot(new_x,new_y)
+
+
+    pos_x = [i for i in range(len(col_)) if 'mas' in col_[i].lower()]
+    for num,punt in enumerate(datos_):
+        x = punt[pos_x[0]]
+        y = punt[pos_y[0]]
+        if x == 0 or y == 0:
+            pass
+        else:
+            dist = [np.polyval(coef,x) - y for coef in new_reg]
+            pos_min = [abs(i) for i in dist].index(min(np.abs(dist)))
+            y_min = np.polyval(new_reg[pos_min],x)
+            dist = [dist[i] for i in range(len(dist)) if i != pos_min]
+            # print(dist)
+            pos_max = [abs(i) for i in dist].index(min(np.abs(dist)))
+            y_max = np.polyval(new_reg[pos_max],x)
+            # print(y_min,y_max)
+            y_min_masa = np.polyval(new_reg[pos_min],x_masa)
+            y_max_masa = np.polyval(new_reg[pos_max],x_masa)
+            y_masa_corregida = y_max_masa - (y_max - y) / (y_max - y_min) * (y_max_masa - y_min_masa)# (y_max - y) / (y_max - y_min) = (y_max_masa - y_masa_corregida) / (y_max_masa - y_min_masa)
+            # print(y_masa_corregida)
+            plt.scatter(x,y,label=f'muestra {num+1}')
+            plt.scatter(x_masa,y_masa_corregida,label=f'muestra {num+1} corregido')
+    plt.xlabel(col_[pos_x[0]])
+    plt.ylabel(col_[pos_y[0]])
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.tight_layout()
+    new_col = [j for j in col_] + ['Schopper corregido']
+    # print(new_col)
+    new_tab = []
+    for i in datos_:
+        new_tab.append([j for j in i] + [y_masa_corregida])
+    return pd.DataFrame(dict(zip(new_col,trans(new_tab))))
 
 def leer_tabla(ruta , nombre = 'tabla 1'):
 
@@ -572,7 +659,7 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
     for pos_tab,tabla in enumerate(tablas):
         print(nombres[pos_tab])
         nombre_inicio = nombres[pos_tab] + ' inicio'
-        tabla_t =trans(acondicionar_tabla(tabla.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
+        tabla_t =trans(acondicionar_tabla(schopper_corr(tabla).values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
         tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla.columns],[['muestra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
@@ -811,7 +898,8 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
                 print(f'Cambia el nombre del archivo siguiente {nombre_archivo} para uno que contenga el nombre del profesor:\nEjemplo:\n{nombre_archivo}_profesor\n\n')
             print(4*'\n')
 
-ruta_ini = '/home/pol-trenchs/Descargas/Trabajo-20241211T193839Z-001/Trabajo'
+# ruta_ini = '/home/pol-trenchs/Descargas/Trabajo-20241211T193839Z-001/Trabajo'
+ruta_ini = '/home/ptrenchs/Descargas/Trabajo-20241217T074841Z-001/Trabajo'
 if str.endswith(ruta_ini,'/'):
     ruta_ini = ruta_ini[:-1]
 titulo_1 = os.path.basename(ruta_ini)  # '/' + titulo_1 + '/'
@@ -852,11 +940,14 @@ while rutas != []:
     rutas = carpetas
     carpetas = []
 
+
 for i,ld in enumerate(lista_dic):
     if i == 0:
         print('creacion del main')
+    elif i == 1:
+        print('Creacion de los ' + 'capitulo')
     else:
-        print('Creacion de los ' + (i-1) * 'sub' + 'section')
+        print('Creacion de los ' + (i-2) * 'sub' + 'section')
     for clave, valor in ld.items():
         print(i * '\t'+ os.path.basename(clave))
     # print({os.path.basename(clave): [os.path.basename(val) for val in valor ]for clave, valor in ld.items()})
