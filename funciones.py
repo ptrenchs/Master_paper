@@ -309,10 +309,13 @@ def schopper_corr(tabla,nombre,ruta):
     plt.tight_layout()
     new_col = [j for j in col_] + ['Schopper corregido']
     # print(new_col)
-    new_tab = []
-    for i in datos_:
-        new_tab.append([j for j in i] + [y_masa_corregida])
-    return pd.DataFrame(dict(zip(new_col,trans(new_tab))))
+    try:
+        new_tab = []
+        for i in datos_:
+            new_tab.append([j for j in i] + [y_masa_corregida])
+        return pd.DataFrame(dict(zip(new_col,trans(new_tab))))
+    except:
+        return tabla
 
 def leer_tabla(ruta , nombre = 'tabla 1'):
 
