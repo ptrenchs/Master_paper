@@ -357,6 +357,8 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
     val_str = str(val).replace(',','.')
     new_val = float(val_str)
+    if isnan(new_val):
+        return new_val
     if new_val < 0:
         signe = '-'
     else:
@@ -727,10 +729,10 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                     intervalo_confianza.append(str(val_significativa(val = limite_inferior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)) + ' - ' + str(val_significativa(val = limite_superior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)))
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muestra '+str(i+1) for i in range(len(new_valores_t))] + ['Medias','Desviación estándar','Valor máximo','Valor mínimo', 'Intervalo de confianza', 'Intervalo']] + acondicionar_tabla(trans(new_valores_t+[medias, val_std, val_max, val_min, intervalo_confianza_mes_menys, intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
-            # try:
-            #     display(tabla_latex)
-            # except:
-            #     pass
+            ## try:
+            ##     display(tabla_latex)
+            ## except:
+            ##     pass
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 if val_std[pos] != 0 and not isnan(val_std[pos]):
@@ -745,7 +747,10 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                 break
             else:
                 bucle_end = []
-
+            # try:
+            #     display(tabla_latex)
+            # except:
+            #     pass
             tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
             texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
             texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
