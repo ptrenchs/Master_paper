@@ -668,7 +668,7 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
         nombre_inicio = nombres[pos_tab] + ' inicio'
         tabla_in = schopper_corr(tabla=tabla,nombre=nombres[pos_tab],ruta = '')
         tabla_t =trans(acondicionar_tabla(tabla_in.values, separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))
-        tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla.columns],[['muestra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
+        tabla_latex = pd.DataFrame(dict(zip(['muestras'] + [i for i in tabla_in.columns],[['muestra '+str(i+1) for i in range(len(trans(tabla_t)))]] + tabla_t)))
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_inicio , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
         texto_main += '\\input{' + nombre_inicio.replace(' ','_') +'}\n'
         with open(carpeta_latex + '/' + nombre_inicio.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
@@ -727,10 +727,10 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                     intervalo_confianza.append(str(val_significativa(val = limite_inferior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)) + ' - ' + str(val_significativa(val = limite_superior, cifras_sig = cifras_sig[pos_tab],separador_decimales = separador_decimales)))
             new_valores_t = trans(new_valores)
             tabla_latex = pd.DataFrame(dict(zip(['muestras']+new_col,[['muestra '+str(i+1) for i in range(len(new_valores_t))] + ['Medias','Desviación estándar','Valor máximo','Valor mínimo', 'Intervalo de confianza', 'Intervalo']] + acondicionar_tabla(trans(new_valores_t+[medias, val_std, val_max, val_min, intervalo_confianza_mes_menys, intervalo_confianza]),separador_decimales = separador_decimales, cifras_sig = cifras_sig[pos_tab]))))
-            try:
-                display(tabla_latex)
-            except:
-                pass
+            # try:
+            #     display(tabla_latex)
+            # except:
+            #     pass
             print(3*'\n')
             for pos, lista in enumerate(new_valores):
                 if val_std[pos] != 0 and not isnan(val_std[pos]):
@@ -755,6 +755,10 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
         tabla_in = pd.DataFrame(dict(zip(new_col,new_valores)))
         texto_main += '\\input{' + nombre_tb.replace(' ','_') +'}\n'
         texto = tabla2latex(tabla_latex, nombre_cap = nombre_tb , cifras_sig = cifras_sig[pos_tab], separador_decimales = separador_decimales)
+        try:
+            display(tabla_latex)
+        except:
+            pass
         with open(carpeta_latex + '/' + nombre_tb.replace(' ','_')+'.tex', 'w', encoding='utf-8') as archivo:
             archivo.write(texto)
     texto_main += crear_include_or_input(posicion = 7, tipo = 'input', ruta_carpeta = carpeta_latex, texto = 'Factores a justificar')+ '\n'            
