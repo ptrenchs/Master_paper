@@ -696,16 +696,16 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                 lista_def = [i for i in lista if not isnan(i)]
                 if lista_def == []:
                     media = np.mean(np.nan)
-                    v_std = np.std(np.nan)
+                    v_std = np.std(np.nan, ddof=1)
                     medias.append(np.nan) 
                     val_std.append(np.nan)
                     val_max.append(np.nan)
                     val_min.append(np.nan)
-                    intervalo_confianza_mes_menys.append(np.nan)
+                    intervalo_confianza_mes_menys.append(np.nan, ddof=1)
                     intervalo_confianza.append(np.nan)
                 else:
                     media = np.mean(lista_def)
-                    v_std = np.std(lista_def)
+                    v_std = np.std(lista_def, ddof=1)
                     medias.append(media) 
                     val_std.append(v_std)
                     val_max.append(max(lista_def))
