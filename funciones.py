@@ -572,7 +572,10 @@ def grubbs_test(lista, alpha=0.05):
     new_lista = [i for i in lista if not isnan(i)]
     n = len(new_lista)
     mean = np.mean(new_lista)
-    std_dev = np.std(new_lista, ddof=1)  # Desviación estándar muestral
+    if 1 <= n: 
+        std_dev = np.std(new_lista, ddof=1)  # Desviación estándar muestral
+    elif n == 1:
+        std_dev = np.std(new_lista)
     
     # Calcular el estadístico de Grubbs
 
@@ -707,7 +710,10 @@ def ejercicio_blanca(ruta, confianza = 0.95, cifras_sig = 3, separador_decimales
                     intervalo_confianza.append(np.nan)
                 else:
                     media = np.mean(lista_def)
-                    v_std = np.std(lista_def, ddof=1)
+                    if len(lista_def) == 1:
+                        v_std = np.std(lista_def)
+                    else:
+                        v_std = np.std(lista_def, ddof=1)
                     medias.append(media) 
                     val_std.append(v_std)
                     val_max.append(max(lista_def))
