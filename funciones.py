@@ -357,8 +357,8 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
 def val_significativa(val,cifras_sig, separador_decimales = '.'):
     val_str = str(val).replace(',','.')
     new_val = float(val_str)
-    if isnan(new_val):
-        return new_val
+    # if isnan(new_val):
+    #     return new_val
     if new_val < 0:
         signe = '-'
     else:
