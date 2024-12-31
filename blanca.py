@@ -207,8 +207,13 @@ class ordenar_directorio:
                 new_lista.append(ruta)
         return new_lista
     
-# --------------------------------------------------------
 
+def informacion_ruta(ruta):
+    carpeta = '/'.join(ruta.split('/')[:-1])
+    nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
+    extension = os.path.basename(ruta).split('.')[-1]
+    return carpeta,nombre,extension
+# --------------------------------------------------------
 
 
 def trans(tabla_original):
@@ -228,13 +233,15 @@ def trans(tabla_original):
                 tabla_trans[i].append(new_tabla[j][i])
     return tabla_trans
 
-def schopper_corr(tabla,nombre,ruta):
+    
+
+def schopper_corr(tabla,ruta,palabra_clave = 'Carpeta_latex'):
     x_masa = 2
-    nombre_arch_spe = ('.'.join(os.path.basename(ruta).split('.')[:-1])).replace('_',' ').replace('-',' ')
-    nombre_arch_sub_bar = nombre_arch_spe.replace(' ','_')
+    nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
     nombre_spe = nombre.replace('_',' ').replace('-',' ')
     nombre_sub_bar = nombre_spe.replace(' ','_')
-    nombre_arch_spe_t = ' '.join([i for i in nombre_arch_spe.split(' ')if not str.isdigit(i)])
+    ruta_carp = '/'.join(ruta.split('/')[:-1])
+    ruta_img = crear_carpeta(nombre_carpeta = 'Carpeta_img',ruta = ruta_carp) + '/' + nombre_sub_bar + '.png'
 
     col_,datos_ = tabla.columns,tabla.values
     if len(tabla.values) == 0:
@@ -251,7 +258,7 @@ def schopper_corr(tabla,nombre,ruta):
     all_y = [d for i,d in enumerate(datos) if i != pos_x]
     new_reg = []
     plt.figure(figsize=(10,6))
-    plt.title(nombre_arch_spe_t + '-' + nombre_spe)
+    # plt.title(nombre_arch_spe_t + '-' + nombre_spe)
     for y_in in all_y:
         y = np.array([i for i in y_in if not isnan(i)])
         # len_y = len(y)
@@ -311,15 +318,17 @@ def schopper_corr(tabla,nombre,ruta):
     plt.ylabel(col_[pos_y[0]])
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
+    
     new_col = [j for j in col_] + ['Schopper corregido']
     # print(new_col)
     if y_masa_corregida_list != []:
         new_tab = []
         for i in range(len(datos_)):
             new_tab.append([j for j in datos_[i]] + [y_masa_corregida_list[i]])
-        return pd.DataFrame(dict(zip(new_col,trans(new_tab))))
+        plt.savefig(ruta_img)    
+        return pd.DataFrame(dict(zip(new_col,trans(new_tab)))), figure_latex(ruta_img = ruta_img, ruta_carp_tex=ruta_carp,palabra_clave = palabra_clave)
     else:
-        return tabla
+        return tabla,''
 
 def tabla_def(tabla):
     col = [i for i in tabla.columns]
@@ -401,7 +410,7 @@ def leer_tabla(ruta , nombre = 'tabla 1'):
         all_tablas.append(passar_str_num(tabla))
         return [nombres_hojas, all_tablas]
 
-def val_significativa(val,cifras_sig, separador_decimales = '.'):
+def val_significativa(val,cifras_sig, separador_decimales = '.', cient = True):
     val_str = str(val).replace(',','.')
     new_val = float(val_str)
     # if isnan(new_val):
@@ -451,24 +460,34 @@ def val_significativa(val,cifras_sig, separador_decimales = '.'):
     if int(val_tot[-2:])<3 and int(val_tot[-2:])>=0:
         val_tot_str = str(float(val_tot))
         if len(val_tot_str)-1<cifras_sig:
-            return (signe + val_tot_str + abs(len(val_tot_str)-1 - cifras_sig) * '0').replace('.',separador_decimales)
+            if cient:
+                return (signe + val_tot_str + abs(len(val_tot_str)-1 - cifras_sig) * '0').replace('.',separador_decimales)
+            else:
+                return str(float(signe + val_tot_str + abs(len(val_tot_str)-1 - cifras_sig) * '0')).replace('.',separador_decimales)
         else:
-            return signe + val_tot_str.replace('.',separador_decimales)
+            if cient:
+                return signe + val_tot_str.replace('.',separador_decimales)
+            else:
+                return str(float(signe + val_tot_str)).replace('.',separador_decimales)
     else:
         # if int(val_tot[-2:])z0:
-        return (signe + val_sin_e + val_e).replace('.',separador_decimales)
+        if cient:
+            return (signe + val_sin_e + val_e).replace('.',separador_decimales)
+        else:
+            return str(float(signe + val_sin_e + val_e)).replace('.',separador_decimales)
 
 
-def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
-    tabla= [[j for j in i] for i in tabla]
+def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.', cient = True):
+    datos = tabla.values
+    datos = [[j for j in i] for i in datos]
     new_tabla = []
-    if type(cifras_sig) == list and len(cifras_sig) >= len(tabla):
-        cifras_sig = [int(cifras_sig[i]) for i in range(len(tabla))]
-        for pos,lis in enumerate(tabla):
+    if type(cifras_sig) == list and len(cifras_sig) >= len(datos):
+        cifras_sig = [int(cifras_sig[i]) for i in range(len(datos))]
+        for pos,lis in enumerate(datos):
             new_tabla.append([])
             for val in lis:
                 try:
-                    new_tabla[-1].append(val_significativa(val,cifras_sig[pos], separador_decimales))
+                    new_tabla[-1].append(val_significativa(val,cifras_sig[pos], separador_decimales, cient = cient))
                 except:
                     if type(val) == str:
                         new_tabla[-1].append(val)
@@ -476,15 +495,15 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
                         new_tabla[-1].append('')
                     else:
                         new_tabla[-1].append(val)
-    elif type(cifras_sig) == int or type(cifras_sig) == float or len(cifras_sig) < len(tabla):
+    elif type(cifras_sig) == int or type(cifras_sig) == float or len(cifras_sig) < len(datos):
         if type(cifras_sig) == list:
             cifras_sig = 3
         cifras_sig = int(cifras_sig)
-        for lis in tabla:
+        for lis in datos:
             new_tabla.append([])
             for val in lis:
                 try:
-                    new_tabla[-1].append(val_significativa(val,cifras_sig, separador_decimales))
+                    new_tabla[-1].append(val_significativa(val,cifras_sig, separador_decimales, cient = cient))
                 except:
                     if type(val) == str:
                         new_tabla[-1].append(val)
@@ -493,7 +512,7 @@ def acondicionar_tabla(tabla, cifras_sig = 3, separador_decimales = '.'):
                     else:
                         new_tabla[-1].append(val)
 
-    return new_tabla
+    return pd.DataFrame(dict(zip(tabla.columns,trans(new_tabla))))
 
 
 
@@ -512,27 +531,74 @@ def excel_to_csv(ruta):
             passar_str_num(tabla = dataframe).to_csv(new_ruta_carpeta + '/' + str(n) + '_' + nombre_hoja + '.csv',index = False)
             n += 1
 
+def escribir_doc(ruta_archivo, texto):
+    if type(texto) == list:
+        texto = '\n'.join(texto)
+    with open(ruta_archivo, 'w', encoding='utf-8') as archivo:
+        archivo.write(texto)
 
-def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimales = '.'):
-    
-    _, tabla = leer_tabla(tabla)
-    tabla = tabla[0]
-    # display(tabla)
-    columnas, datos = tabla.columns, acondicionar_tabla(tabla.values, cifras_sig, separador_decimales)
+def corregir_ruta(ruta, palabra_clave = 'Carpeta_latex'):
+    ruta_split = ruta.split('/')
+    ruta_split = ruta_split[::-1]
+    for i,rs in enumerate(ruta_split):
+        if palabra_clave in rs:
+            return '/'.join(ruta_split[:i+1][::-1])
+    return ruta
+
+def corregir_nombre(nombre):
+    print(nombre)
+    for nm in nombre:
+        for car in ' \t-_':
+            if nm == car:
+                break
+        if nm == car:
+            break
+    if nm == car:
+        nombre_sp = nombre.split(car)
+    else:
+        nombre_sp = nombre
+    if str.isnumeric(nombre_sp[0]):
+        return car.join(nombre_sp[1:])
+    else:
+        return nombre
+
+def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpeta_latex'):
+    nombre = '.'.join(os.path.basename(ruta_img).split('.')[:-1])
+    new_ruta = '/'.join(ruta_img.split('/'[:-1]))
+    nombre_label = nombre.replace(' ','_').replace('-','_')
+    nombre_cap = nombre_label.replace('_',' ')
+    texto = ''
+    texto += '\n\\begin{figure}[H]\n'
+    texto += '\t\\centering\n'
+    texto += '\t\\includegraphics[width=\\textwidth]{' + corregir_ruta(ruta = ruta_img, palabra_clave = palabra_clave) + '}\n'
+    texto += '\t\\caption{' + corregir_nombre(nombre_cap) + '}\n'
+    texto += '\t\\label{fig:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).split(' ','_').split('-','_') + '_' + nombre_label + '}\n'
+    texto += '\\end{figure}\n'
+    escribir_doc(ruta_archivo = ruta_carp_tex + '/' + nombre_label + '.tex', texto = texto)
+
+    return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
+
+def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = True, tipo = 'input', palabra_clave = 'Carpeta_latex'):
+    nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
+    new_ruta = '/'.join(ruta.split('/'[:-1]))
+    nombre_label = nombre.replace(' ','_').replace('-','_')
+    nombre_cap = nombre_label.replace('_',' ')
+    print(tabla)
+    tab = acondicionar_tabla(tabla, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)
+    columnas, datos = tab.columns, tab.values
+
 
     texto_tabla = '''
 \\begin{table}[H]
 \t\\centering
     '''
-    texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}'for i in columnas])+'|}'
+    texto_tabla += '\t\\begin{tabularx}{\\textwidth}{|'+'|'.join(['X'for i in columnas])+'|}'
 
     texto_tabla += '''
 \t\t\\hline\n\t\t'''
-    col = []
-    for i in columnas:
-        col.append('\\multicolumn{1}{|m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}|}{\\textbf{'+ i +r'}}')
 
-    texto_tabla += ' & '.join(col)
+
+    texto_tabla += ' & '.join(['\\textbf{' + i + '}}' for i in columnas])
 
     texto_tabla += '\n\t\t\\\\ \\hline\n'
 
@@ -541,10 +607,13 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \\hline\n'
     texto_tabla += fila_def
-    texto_tabla += '\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','_').replace('-','_').replace('\t','_') + '}\n\\end{table}\n\n\n'
+    texto_tabla += '\t\\end{tabularx}\n\t\\caption{' + corregir_nombre(nombre_cap) + '}\n\t\\label{tab:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).split(' ','_').split('-','_') + '_' + nombre_label + '}\n\\end{table}\n\n\n'
 
 
-    return texto_tabla
+
+    escribir_doc(ruta_archivo = new_ruta + '/' + nombre_label + '.tex', texto = texto_tabla)
+
+    return '\\' + tipo + '{' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
 
 
 def crear_carpeta(nombre_carpeta,ruta = ''):
@@ -596,21 +665,27 @@ def comandos_latex(ruta_carpeta):
     with open(ruta_carpeta + '/' + 'comandos.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
 
-def crear_include_or_input(texto, posicion = '', ruta_carpeta = '', tipo = 'include'):
+def crear_include_or_input(ruta, texto='', posicion = '', ruta_carpeta = '', tipo = 'input'):
     if type(texto) == list:
         texto = ' '.join(texto)
-
-    tex_label = texto.replace(' ','_').replace('-','_').replace('\t','_')
+    if os.path.isdir(ruta):
+        nombre = os.path.basename(ruta)
+    if os.path.isfile(ruta):
+        nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
+    nombre_archivo = nombre.replace(' ','_').replace('-','_')
+    nombre_label = nombre.replace(' ','_').replace('-','_').replace('\t','_')
     if posicion != '':
-        nombre_archivo = str(posicion) + '_' + tex_label
+        nombre_archivo = str(posicion) + '_' + nombre_archivo
     if ruta_carpeta != '':
         nombre_archivo = ruta_carpeta + '/' +  nombre_archivo
     texto_include = nombre_archivo.split('/')
-    if 1 < len(texto_include):
-        texto_include = '/'.join(texto_include[1:])
+    for i,ti in enumerate(texto_include):
+        if 'Carpeta_latex' in ti:
+            break
+    texto_include = '/'.join(texto_include[i:])
 
     with open(nombre_archivo +'.tex', 'w', encoding='utf-8') as archivo:
-        archivo.write('\\section{' + tex_label.replace('_', ' ') + '} \\label{sec:' + tex_label +'}\n')
+        archivo.write('\\section{' + '_'.join(nombre_label.split('_')[1:]).replace('_', ' ') + '} \\label{sec:' + nombre_label +'}\n' + texto)
     return '\\' + tipo + '{' + texto_include + '}'
 
 
@@ -655,7 +730,14 @@ def grubbs_test(lista, alpha=0.05):
         return False, [np.nan if val_g_max == i else i for i in lista]
     return G_max > G_critical, [np.nan if val_g_max == i else i for i in lista]
 
-def estadisticos(tabla, confianza = 95, cifras_sig = 3, separador_decimales = '.'):
+def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador_decimales = '.', cient = True, palabra_clave = 'Carpeta_latex'):
+    
+    list_inputs = []
+
+    # print(acondicionar_tabla(tabla, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient))
+ 
+    list_inputs.append(tabla2latex(tabla, ruta, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, tipo = 'input', palabra_clave = palabra_clave))
+
     confianza = abs(confianza)
     if 1<confianza:
         confianza = confianza / 100
@@ -665,7 +747,9 @@ def estadisticos(tabla, confianza = 95, cifras_sig = 3, separador_decimales = '.
     
     
     if len([i for i in datos[0] if type(i) ==str]) != len(datos[0]):
-        # tabla = schopper_corr(tabla = tabla,)
+        tabla, tx = schopper_corr(tabla = tabla, ruta= ruta, palabra_clave = palabra_clave)
+        list_inputs.append(tx)
+        datos = trans(tabla.values)
         for i in range(len(datos)):
             while True:
                 condi, dat = grubbs_test(datos[i],alpha=alfa)
@@ -697,21 +781,145 @@ def estadisticos(tabla, confianza = 95, cifras_sig = 3, separador_decimales = '.
                     std.append(np.std(dato,ddof=1))
                 max_.append(max(dato))
                 min_.append(min(dato))
-                media_mas_menos.append(f'{val_significativa(val = medias[-1] - stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales)} - {val_significativa(val = medias[-1] + stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales)}')
-                intervalo.append(f'{val_significativa(val = medias[-1] - stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales)} - {val_significativa(val = medias[-1] + stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales)}')
-        
-        return pd.DataFrame(dict(zip(col,trans(trans(datos) + [medias, std, max_, min_, media_mas_menos, intervalo]))))
+                media_mas_menos.append(f'{val_significativa(val = medias[-1] - stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)} - {val_significativa(val = medias[-1] + stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)}')
+                intervalo.append(f'{val_significativa(val = medias[-1] - stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)} - {val_significativa(val = medias[-1] + stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)}')
+        tabla_def = pd.DataFrame(dict(zip(col,trans(trans(datos) + [medias, std, max_, min_, media_mas_menos, intervalo]))))
+        carp_ruta = '/'.join(ruta.split('/')[:-1])
+        nomb = '.'.join(os.path.basename(ruta).split('.')[:-1])
+        formato = os.path.basename(ruta).split('.')[-1]
+        new_ruta = carp_ruta + '/' + nomb + '_definitiva' + formato
+        list_inputs.append(tabla2latex(tabla = tabla_def, ruta = new_ruta, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, tipo = 'input',palabra_clave = palabra_clave))
+        return pd.DataFrame(dict(zip(col,trans(trans(datos) + [medias, std, max_, min_, media_mas_menos, intervalo])))), '\n'.join(list_inputs)
     else:
-        return tabla
+        return tabla,''
 
 
-ruta = "/home/pol-trenchs/Escritorio/Trabajo/3_Resultados/1_Popiedades_fisicomecanicas/1_Inicial_y_refino/3_Refino_5000.csv"
-# excel_to_csv(ruta)
-tabla = pd.read_csv(ruta)
-print(tabla)
-tabla = tabla_def(tabla)
-print(estadisticos(tabla))
+# ruta = "/home/pol-trenchs/Escritorio/Trabajo/3_Resultados/1_Popiedades_fisicomecanicas/1_Inicial_y_refino/3_Refino_5000.csv"
+ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
+palabra_clave = 'latex'
 
-datos = trans(tabla.values)
+if str.endswith(ruta_ini,'/'):
+    ruta_ini = ruta_ini[:-1]
+
+ob_dir = Directorio(rutas=ruta_ini)
+exc_arch = Filtros_formato(ob_dir.all_archivos(), 'xlsx').elejir()
+# print(exc_arch)
+for ea in exc_arch:
+    excel_to_csv(ea)
+titulo_1 = os.path.basename(ruta_ini)
+ob_dir = Directorio(rutas=ruta_ini)
+
+
+carpetas = []
+lista_dic = []
+# archivos = []
+n = 0
+rutas = [i for i in [ruta_ini]]
+while True:
+    all_sub = []
+    sub_lista = []
+    for ruta in rutas:
+        carp = Directorio.carpetas(ruta=ruta)
+        arch = Filtros_formato(Directorio.archivos(ruta=ruta),'csv,tex').elejir()
+        all_ = Directorio.ordenar_lista_num(arch + carp)
+        sub_lista.append(all_)
+        all_sub += all_
+        carpetas += carp
+
+    lista_dic.append(dict(zip(rutas ,sub_lista)))
+    rutas = carpetas
+    if rutas == [] or n == 3:
+        break
+    carpetas = []
+    n += 1
+
+new_carpeta = os.path.basename(ruta_ini)
+
+lista_dic = lista_dic[::-1]
+new_text = []
+for i,ld in enumerate(lista_dic):  
+    for clave, valor in ld.items():
+        print(clave)
+        for val in valor:
+            if i < 3:
+                print(i * '\t' + '\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' ')) + '}')
+            else:
+                print(i * '\t' + '\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
+            
+            new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
+            if os.path.isfile(val):
+                carp_,nomb_,forma_ = informacion_ruta(ruta = val)
+                # new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val)
+            print(i * '\t' + os.path.basename(new_val))
+            # print(val)
+            # print(new_val)
+        print('\n')
+    print('\n')
+    # print(ld)
+
+
+print(len(lista_dic))
+# if n == 3:
+#     for i,ld in enumerate(lista_dic[::-1]):
+#         if i == len(lista_dic)-1:
+#             print('creacion del main')
+#             for clave, valor in ld.items():
+#                 for val in valor:
+#                     new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
+#                     if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
+#                     else:
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
+#                     print(i * '\t' + os.path.basename(new_val))
+#             # print([[os.path.basename(i) for i in valor] for clave, valor in ld.items()])
+#         elif i == len(lista_dic)-2:
+#             print('Creacion de los ' + 'capitulo')
+#             for clave, valor in ld.items():
+#                 for val in valor:
+#                     new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
+#                     if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
+#                     else:
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
+#                     print(i * '\t' + os.path.basename(new_val))
+#         else:
+#             print('Creacion de los ' + (i-2) * 'sub' + 'section')
+#             for clave, valor in ld.items():
+#                 for val in valor:
+#                     new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
+#                     if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
+#                     else:
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
+#                     print(i * '\t' + os.path.basename(new_val))
+
+
+
+
+
+#         for clave, valor in ld.items():
+#             print(i * '\t'+ os.path.basename(clave))
+
+
+# else:
+#     for i,ld in enumerate(lista_dic):
+#         if i == 0:
+#             print('creacion del main')
+#         else:
+#             print('Creacion de los ' + (i-2) * 'sub' + 'section')
+#         for clave, valor in ld.items():
+#             print(i * '\t'+ os.path.basename(clave))
+
+
+# confianza = 95
+# cifras_sig = 3
+# separador_decimales = '.'
+# cient = False
+# tabla = pd.read_csv(ruta)
+
+# tabla = tabla_def(tabla)
+# ruta_guardar = '/'.join(ruta.split('/')[:-1])
+# nombre = os.path.basename(ruta)
+# estadisticos_y_grubbs(tabla = tabla, ruta_guardar = ruta_guardar, nombre = nombre, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)
 
 

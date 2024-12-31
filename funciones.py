@@ -922,10 +922,10 @@ def all_ejercicios(rutas, confianza = 0.95, cifras_sig = 3, separador_decimales 
             print(4*'\n')
 
 # ruta_ini = '/home/pol-trenchs/Descargas/Trabajo-20241211T193839Z-001/Trabajo'
-ruta_ini = '/home/pol-trenchs/Escritorio/Trabajo/'
-if str.endswith(ruta_ini,'/'):
-    ruta_ini = ruta_ini[:-1]
-titulo_1 = os.path.basename(ruta_ini)  # '/' + titulo_1 + '/'
+# ruta_ini = '/home/pol-trenchs/Escritorio/Trabajo/'
+# if str.endswith(ruta_ini,'/'):
+#     ruta_ini = ruta_ini[:-1]
+# titulo_1 = os.path.basename(ruta_ini)  # '/' + titulo_1 + '/'
 
 # def ordenar_lista_num(lista):
 #     lista_ordenada = []
@@ -947,74 +947,74 @@ titulo_1 = os.path.basename(ruta_ini)  # '/' + titulo_1 + '/'
 
 
 # carpetas_all = []
-carpetas = []
-lista_dic = []
-# archivos = []
-n = 0
-rutas = [i for i in [ruta_ini]]
-while True:
-    all_sub = []
-    sub_lista = []
-    for ruta in rutas:
-        carp = Directorio.carpetas(ruta=ruta)
-        arch = Directorio.archivos(ruta=ruta)
-        all_ = Directorio.ordenar_lista_num(arch + carp)
-        sub_lista.append(all_)
-        all_sub += all_
-        carpetas += carp
+# carpetas = []
+# lista_dic = []
+# # archivos = []
+# n = 0
+# rutas = [i for i in [ruta_ini]]
+# while True:
+#     all_sub = []
+#     sub_lista = []
+#     for ruta in rutas:
+#         carp = Directorio.carpetas(ruta=ruta)
+#         arch = Directorio.archivos(ruta=ruta)
+#         all_ = Directorio.ordenar_lista_num(arch + carp)
+#         sub_lista.append(all_)
+#         all_sub += all_
+#         carpetas += carp
 
-    lista_dic.append(dict(zip(rutas ,sub_lista)))
-    rutas = carpetas
-    if rutas == [] or n == 2:
-        break
-    carpetas = []
-    n += 1
-if [i for i in all_sub if os.path.basename(i).split('.')[-1].lower() == 'xlsx' or os.path.isdir(i)] != []:
-    n += 1
+#     lista_dic.append(dict(zip(rutas ,sub_lista)))
+#     rutas = carpetas
+#     if rutas == [] or n == 2:
+#         break
+#     carpetas = []
+#     n += 1
+# if [i for i in all_sub if os.path.basename(i).split('.')[-1].lower() == 'xlsx' or os.path.isdir(i)] != []:
+#     n += 1
 
-if n == 3:
-    for i,ld in enumerate(lista_dic[::-1]):
-        if i == len(lista_dic)-1:
-            print('creacion del main')
-            for clave, valor in ld.items():
-                for val in valor:
-                    new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
-                    if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
-                        new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
-                    else:
-                        new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
-                    print(i * '\t' + os.path.basename(new_val))
-            # print([[os.path.basename(i) for i in valor] for clave, valor in ld.items()])
-        elif i == len(lista_dic)-2:
-            print('Creacion de los ' + 'capitulo')
-            for clave, valor in ld.items():
-                for val in valor:
-                    new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
-                    if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
-                        new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
-                    else:
-                        new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
-                    print(i * '\t' + os.path.basename(new_val))
-        else:
-            print('Creacion de los ' + (i-2) * 'sub' + 'section')
-            for clave, valor in ld.items():
-                for val in valor:
-                    new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
-                    if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
-                        new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
-                    else:
-                        new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
-                    print(i * '\t' + os.path.basename(new_val))
+# if n == 3:
+#     for i,ld in enumerate(lista_dic[::-1]):
+#         if i == len(lista_dic)-1:
+#             print('creacion del main')
+#             for clave, valor in ld.items():
+#                 for val in valor:
+#                     new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
+#                     if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
+#                     else:
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
+#                     print(i * '\t' + os.path.basename(new_val))
+#             # print([[os.path.basename(i) for i in valor] for clave, valor in ld.items()])
+#         elif i == len(lista_dic)-2:
+#             print('Creacion de los ' + 'capitulo')
+#             for clave, valor in ld.items():
+#                 for val in valor:
+#                     new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
+#                     if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
+#                     else:
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
+#                     print(i * '\t' + os.path.basename(new_val))
+#         else:
+#             print('Creacion de los ' + (i-2) * 'sub' + 'section')
+#             for clave, valor in ld.items():
+#                 for val in valor:
+#                     new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_latex/')
+#                     if os.path.basename(new_val).split('.')[-1].lower() == 'xlsx':
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + '.'.join(os.path.basename(new_val).split('.')[:-1]) + '_main'
+#                     else:
+#                         new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val) + '_main'
+#                     print(i * '\t' + os.path.basename(new_val))
+# #         for clave, valor in ld.items():
+# #             print(i * '\t'+ os.path.basename(clave))
+# else:
+#     for i,ld in enumerate(lista_dic):
+#         if i == 0:
+#             print('creacion del main')
+#         else:
+#             print('Creacion de los ' + (i-2) * 'sub' + 'section')
 #         for clave, valor in ld.items():
 #             print(i * '\t'+ os.path.basename(clave))
-else:
-    for i,ld in enumerate(lista_dic):
-        if i == 0:
-            print('creacion del main')
-        else:
-            print('Creacion de los ' + (i-2) * 'sub' + 'section')
-        for clave, valor in ld.items():
-            print(i * '\t'+ os.path.basename(clave))
 
 
     
