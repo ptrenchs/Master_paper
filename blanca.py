@@ -241,7 +241,7 @@ def schopper_corr(tabla,ruta,palabra_clave = 'Carpeta_latex'):
     nombre_spe = nombre.replace('_',' ').replace('-',' ')
     nombre_sub_bar = nombre_spe.replace(' ','_')
     ruta_carp = '/'.join(ruta.split('/')[:-1])
-    ruta_img = crear_carpeta(nombre_carpeta = 'Carpeta_img',ruta = ruta_carp) + '/' + nombre_sub_bar + '.png'
+    
 
     col_,datos_ = tabla.columns,tabla.values
     if len(tabla.values) == 0:
@@ -322,6 +322,7 @@ def schopper_corr(tabla,ruta,palabra_clave = 'Carpeta_latex'):
     new_col = [j for j in col_] + ['Schopper corregido']
     # print(new_col)
     if y_masa_corregida_list != []:
+        ruta_img = crear_carpeta(nombre_carpeta = 'Carpeta_img',ruta = ruta_carp) + '/' + nombre_sub_bar + '.png'
         new_tab = []
         for i in range(len(datos_)):
             new_tab.append([j for j in datos_[i]] + [y_masa_corregida_list[i]])
@@ -548,7 +549,7 @@ def corregir_ruta(ruta, palabra_clave = 'Carpeta_latex'):
     return ruta
 
 def corregir_nombre(nombre):
-    print(nombre)
+    # print(nombre)
     for nm in nombre:
         for car in ' \t-_':
             if nm == car:
@@ -566,7 +567,7 @@ def corregir_nombre(nombre):
 
 def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpeta_latex'):
     nombre = '.'.join(os.path.basename(ruta_img).split('.')[:-1])
-    new_ruta = '/'.join(ruta_img.split('/'[:-1]))
+    new_ruta = '/'.join(ruta_img.split('/')[:-1])
     nombre_label = nombre.replace(' ','_').replace('-','_')
     nombre_cap = nombre_label.replace('_',' ')
     texto = ''
@@ -574,19 +575,19 @@ def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpe
     texto += '\t\\centering\n'
     texto += '\t\\includegraphics[width=\\textwidth]{' + corregir_ruta(ruta = ruta_img, palabra_clave = palabra_clave) + '}\n'
     texto += '\t\\caption{' + corregir_nombre(nombre_cap) + '}\n'
-    texto += '\t\\label{fig:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).split(' ','_').split('-','_') + '_' + nombre_label + '}\n'
+    texto += '\t\\label{fig:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).replace(' ','_').replace('-','_').replace('/','_') + '_' + nombre_label + '}\n'
     texto += '\\end{figure}\n'
     escribir_doc(ruta_archivo = ruta_carp_tex + '/' + nombre_label + '.tex', texto = texto)
 
     return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
 
 def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = True, tipo = 'input', palabra_clave = 'Carpeta_latex'):
-    print(ruta)
+    # print(ruta)
     nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
     new_ruta = '/'.join(ruta.split('/')[:-1])
     nombre_label = nombre.replace(' ','_').replace('-','_')
     nombre_cap = nombre_label.replace('_',' ')
-    print(tabla)
+    # print(tabla)
     tab = acondicionar_tabla(tabla, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)
     columnas, datos = tab.columns, tab.values
 
@@ -610,7 +611,7 @@ def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = T
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \\hline\n'
     texto_tabla += fila_def
-    texto_tabla += '\t\\end{tabularx}\n\t\\caption{' + corregir_nombre(nombre_cap) + '}\n\t\\label{tab:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).replace(' ','_').replace('-','_') + '_' + nombre_label + '}\n\\end{table}\n\n\n'
+    texto_tabla += '\t\\end{tabularx}\n\t\\caption{' + corregir_nombre(nombre_cap) + '}\n\t\\label{tab:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).replace(' ','_').replace('-','_').replace('/','_') + '_' + nombre_label + '}\n\\end{table}\n\n\n'
 
 
 
@@ -724,22 +725,24 @@ def grubbs_test(lista, alpha=0.05):
         return False, lista
     n = len(new_lista)
     mean = np.mean(new_lista)
-    if 1 <= n: 
+    if 1 < n: 
         std_dev = np.std(new_lista, ddof=1)  # Desviación estándar muestral
-    elif n == 1:
+    else:
         std_dev = np.std(new_lista)
-    
+    if std_dev == 0:
+        return False, new_lista
     # Calcular el estadístico de Grubbs
-
+    
+    G_s = [abs(i - mean) / std_dev for i in new_lista]
     G_max = max([abs(i - mean) / std_dev for i in new_lista])
-    val_g_max = [i for i in new_lista if abs(i - mean) / std_dev == G_max][0]
+    pos_max = G_s.index(G_max)
+    val_g_max = [i for i in new_lista][pos_max]
     # Calcular el valor crítico de Grubbs
     t_dist = stats.t.ppf(1 - alpha/(2*n), n-2)  # distribucion t
     G_critical = ((n-1) / np.sqrt(n)) * np.sqrt(t_dist**2 / (n-2 + t_dist**2))
     # print(str(G_max) + ' < ' + str(G_critical))
     
-    if std_dev == 0:
-        return False, [np.nan if val_g_max == i else i for i in lista]
+    
     return G_max > G_critical, [np.nan if val_g_max == i else i for i in lista]
 
 def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador_decimales = '.', cient = True, palabra_clave = 'Carpeta_latex'):
@@ -788,9 +791,9 @@ def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador
             else:
                 medias.append(np.mean(dato))
                 if 1 < len(dato):
-                    std.append(np.std(dato))
-                else:
                     std.append(np.std(dato,ddof=1))
+                else:
+                    std.append(np.std(dato))
                 max_.append(max(dato))
                 min_.append(min(dato))
                 media_mas_menos.append(f'{val_significativa(val = medias[-1] - stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)} - {val_significativa(val = medias[-1] + stats.norm.ppf(1 - alfa / 2) * (std[-1] / np.sqrt(len(dato))), cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)}')
@@ -855,11 +858,14 @@ lista_dic = lista_dic[::-1]
 new_text = []
 for i,ld in enumerate(lista_dic):  
     for clave, valor in ld.items():
+        texto_list = []
         # print(clave)
         for val in valor:
             if i < 3:
+                texto_list.append('\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' ')) + '}')
                 print(i * '\t' + '\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' ')) + '}')
             else:
+                texto_list.append('\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
                 print(i * '\t' + '\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
             new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
             if os.path.isfile(val):
@@ -871,7 +877,8 @@ for i,ld in enumerate(lista_dic):
                         tabla = ''
 
                     if type(tabla) == pd.DataFrame:
-                        lista_inputs = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = 95, cifras_sig = 3, separador_decimales = '.', cient = True, palabra_clave = 'Carpeta_latex')
+                        _,lista_inputs = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, palabra_clave = palabra_clave)
+                        texto_list.append(lista_inputs)
                 else:
                     pass
                 
@@ -879,6 +886,7 @@ for i,ld in enumerate(lista_dic):
             print(i * '\t' + os.path.basename(new_val))
             # print(val)
             # print(new_val)
+        print('\n'.join(texto_list))
         print('\n')
     print('\n')
     # print(ld)
