@@ -212,7 +212,7 @@ def informacion_ruta(ruta):
     carpeta = '/'.join(ruta.split('/')[:-1])
     nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
     extension = os.path.basename(ruta).split('.')[-1]
-    return carpeta,nombre,extension
+    return carpeta,nombre,extension.lower()
 # --------------------------------------------------------
 
 
@@ -245,11 +245,11 @@ def schopper_corr(tabla,ruta,palabra_clave = 'Carpeta_latex'):
 
     col_,datos_ = tabla.columns,tabla.values
     if len(tabla.values) == 0:
-        return tabla
+        return tabla,''
     pos_y = [i for i in range(len(col_)) if 'schopper' in col_[i].lower()]
     # print(pos_y)
     if len(pos_y) == 0:
-        return tabla
+        return tabla,''
 
     tabla_gr = pd.read_csv('https://raw.githubusercontent.com/ptrenchs/Master_paper/main/B1-Oriol-Tecnologia%20de%20la%20fabricacio%20de%20paper/practicas_laboratorio/tablas_grafica_oriol.csv')
     col_gr,datos = tabla_gr.columns,trans(tabla_gr.values)
@@ -328,7 +328,7 @@ def schopper_corr(tabla,ruta,palabra_clave = 'Carpeta_latex'):
         plt.savefig(ruta_img)    
         return pd.DataFrame(dict(zip(new_col,trans(new_tab)))), figure_latex(ruta_img = ruta_img, ruta_carp_tex=ruta_carp,palabra_clave = palabra_clave)
     else:
-        return tabla,''
+        return tabla, ''
 
 def tabla_def(tabla):
     col = [i for i in tabla.columns]
@@ -532,6 +532,8 @@ def excel_to_csv(ruta):
             n += 1
 
 def escribir_doc(ruta_archivo, texto):
+    ruta_carp, _, _ = informacion_ruta(ruta_archivo)
+    crear_carpeta(ruta = ruta_carp)
     if type(texto) == list:
         texto = '\n'.join(texto)
     with open(ruta_archivo, 'w', encoding='utf-8') as archivo:
@@ -579,8 +581,9 @@ def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpe
     return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
 
 def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = True, tipo = 'input', palabra_clave = 'Carpeta_latex'):
+    print(ruta)
     nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
-    new_ruta = '/'.join(ruta.split('/'[:-1]))
+    new_ruta = '/'.join(ruta.split('/')[:-1])
     nombre_label = nombre.replace(' ','_').replace('-','_')
     nombre_cap = nombre_label.replace('_',' ')
     print(tabla)
@@ -607,7 +610,7 @@ def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = T
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \\hline\n'
     texto_tabla += fila_def
-    texto_tabla += '\t\\end{tabularx}\n\t\\caption{' + corregir_nombre(nombre_cap) + '}\n\t\\label{tab:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).split(' ','_').split('-','_') + '_' + nombre_label + '}\n\\end{table}\n\n\n'
+    texto_tabla += '\t\\end{tabularx}\n\t\\caption{' + corregir_nombre(nombre_cap) + '}\n\t\\label{tab:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).replace(' ','_').replace('-','_') + '_' + nombre_label + '}\n\\end{table}\n\n\n'
 
 
 
@@ -616,13 +619,22 @@ def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = T
     return '\\' + tipo + '{' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
 
 
-def crear_carpeta(nombre_carpeta,ruta = ''):
-    if ruta != '':
-        ruta_carpeta = ruta + '/' + nombre_carpeta
+def crear_carpeta(nombre_carpeta = '',ruta = ''):
+    if nombre_carpeta == '':
+        if ruta == '':
+            raise ValueError(f"Error")
+            
+        else:
+            ruta_carpeta = ruta
     else:
-        ruta_carpeta = nombre_carpeta
+        if ruta == '':
+            ruta_carpeta = nombre_carpeta
+        else:
+            ruta_carpeta = ruta + '/' + nombre_carpeta
+            
+    # print(ruta_carpeta)
     if not os.path.exists(ruta_carpeta):
-        os.mkdir(ruta_carpeta)
+        os.makedirs(ruta_carpeta, exist_ok=True)
         while True:
             if os.path.exists(ruta_carpeta):
                 break
@@ -787,7 +799,7 @@ def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador
         carp_ruta = '/'.join(ruta.split('/')[:-1])
         nomb = '.'.join(os.path.basename(ruta).split('.')[:-1])
         formato = os.path.basename(ruta).split('.')[-1]
-        new_ruta = carp_ruta + '/' + nomb + '_definitiva' + formato
+        new_ruta = carp_ruta + '/' + nomb + '_definitiva' + '.' + formato
         list_inputs.append(tabla2latex(tabla = tabla_def, ruta = new_ruta, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, tipo = 'input',palabra_clave = palabra_clave))
         return pd.DataFrame(dict(zip(col,trans(trans(datos) + [medias, std, max_, min_, media_mas_menos, intervalo])))), '\n'.join(list_inputs)
     else:
@@ -796,6 +808,10 @@ def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador
 
 # ruta = "/home/pol-trenchs/Escritorio/Trabajo/3_Resultados/1_Popiedades_fisicomecanicas/1_Inicial_y_refino/3_Refino_5000.csv"
 ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
+confianza = 95
+cifras_sig = 3
+separador_decimales = '.'
+cient = False
 palabra_clave = 'latex'
 
 if str.endswith(ruta_ini,'/'):
@@ -839,16 +855,26 @@ lista_dic = lista_dic[::-1]
 new_text = []
 for i,ld in enumerate(lista_dic):  
     for clave, valor in ld.items():
-        print(clave)
+        # print(clave)
         for val in valor:
             if i < 3:
                 print(i * '\t' + '\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' ')) + '}')
             else:
                 print(i * '\t' + '\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
-            
             new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
             if os.path.isfile(val):
                 carp_,nomb_,forma_ = informacion_ruta(ruta = val)
+                if forma_ == 'csv':
+                    try:
+                        tabla = pd.read_csv(val)
+                    except:
+                        tabla = ''
+
+                    if type(tabla) == pd.DataFrame:
+                        lista_inputs = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = 95, cifras_sig = 3, separador_decimales = '.', cient = True, palabra_clave = 'Carpeta_latex')
+                else:
+                    pass
+                
                 # new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val)
             print(i * '\t' + os.path.basename(new_val))
             # print(val)
@@ -858,7 +884,6 @@ for i,ld in enumerate(lista_dic):
     # print(ld)
 
 
-print(len(lista_dic))
 # if n == 3:
 #     for i,ld in enumerate(lista_dic[::-1]):
 #         if i == len(lista_dic)-1:
@@ -915,6 +940,7 @@ print(len(lista_dic))
 # cifras_sig = 3
 # separador_decimales = '.'
 # cient = False
+# palabra_clave = 'Carpeta_latex'
 # tabla = pd.read_csv(ruta)
 
 # tabla = tabla_def(tabla)
