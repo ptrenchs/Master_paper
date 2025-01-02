@@ -30,6 +30,8 @@ class  Directorio:
                 else:
                     nombre_carp = lso.replace(' ','_').replace('-','_')
                 if nombre_carp.split('_')[0] == orde or nombre_carp.split('_')[-1] == orde:
+                    # print(lista)
+                    # print(lso)
                     lista_ordenada.append(lso)
                     lista_no_ordenada.remove(lso)
         return lista_ordenada + lista_no_ordenada
@@ -529,7 +531,9 @@ def excel_to_csv(ruta):
         new_ruta_carpeta = crear_carpeta(ruta = ruta_carpeta,nombre_carpeta=nombre)
         for nombre_hoja, dataframe in tablas.items():
             nombre_hoja = nombre_hoja.replace(' ','_').replace('-','_')
-            passar_str_num(tabla = dataframe).to_csv(new_ruta_carpeta + '/' + str(n) + '_' + nombre_hoja + '.csv',index = False)
+            if [i for i in dataframe.columns] != [] and [i for i in dataframe.values] != []:
+                print([i for i in dataframe.columns])
+                passar_str_num(tabla = dataframe).to_csv(new_ruta_carpeta + '/' + str(n) + '_' + nombre_hoja + '.csv',index = False)
             n += 1
 
 def escribir_doc(ruta_archivo, texto):
@@ -545,7 +549,7 @@ def corregir_ruta(ruta, palabra_clave = 'Carpeta_latex'):
     ruta_split = ruta_split[::-1]
     for i,rs in enumerate(ruta_split):
         if palabra_clave in rs:
-            return '/'.join(ruta_split[:i+1][::-1])
+            return '/'.join(ruta_split[:i][::-1])
     return ruta
 
 def corregir_nombre(nombre):
@@ -577,7 +581,7 @@ def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpe
     texto += '\t\\caption{' + corregir_nombre(nombre_cap) + '}\n'
     texto += '\t\\label{fig:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).replace(' ','_').replace('-','_').replace('/','_') + '_' + nombre_label + '}\n'
     texto += '\\end{figure}\n'
-    escribir_doc(ruta_archivo = ruta_carp_tex + '/' + nombre_label + '.tex', texto = texto)
+    escribir_doc(ruta_archivo = ruta_carp_tex + '/' + nombre_label + '_img.tex', texto = texto)
 
     return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
 
@@ -810,7 +814,8 @@ def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador
 
 
 # ruta = "/home/pol-trenchs/Escritorio/Trabajo/3_Resultados/1_Popiedades_fisicomecanicas/1_Inicial_y_refino/3_Refino_5000.csv"
-ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
+# ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
+ruta_ini = "/home/ptrenchs/Escritorio/Trabajo"
 confianza = 95
 cifras_sig = 3
 separador_decimales = '.'
@@ -868,29 +873,35 @@ for i,ld in enumerate(lista_dic):
                 texto_list.append('\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
                 print(i * '\t' + '\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
             new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
+            print(val)
             if os.path.isfile(val):
                 carp_,nomb_,forma_ = informacion_ruta(ruta = val)
                 if forma_ == 'csv':
-                    try:
-                        tabla = pd.read_csv(val)
-                    except:
-                        tabla = ''
-
-                    if type(tabla) == pd.DataFrame:
-                        _,lista_inputs = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, palabra_clave = palabra_clave)
-                        texto_list.append(lista_inputs)
+                    tabla = pd.read_csv(val)
+                    _,lista_inputs = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, palabra_clave = palabra_clave)
+                    texto_list.append(lista_inputs)
                 else:
                     pass
+            if os.path.isdir(val):
+                texto_list.append('\\include{' + corregir_ruta(ruta = new_val + '/' + os.path.basename(new_val) + '_branch', palabra_clave =palabra_clave)+'}')
+                
                 
                 # new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val)
             print(i * '\t' + os.path.basename(new_val))
             # print(val)
             # print(new_val)
+        if i<len(lista_dic) -1:
+            new_clave = clave.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
+            ruta_new_clave = new_clave + '/' + os.path.basename(new_clave) + '_branch.tex'
+        else:
+            new_clave = clave.replace('/' + titulo_1 , '/' + titulo_1 + '_' + palabra_clave )
+            ruta_new_clave = new_clave + '/' + 'main.tex'
+        escribir_doc(ruta_archivo = ruta_new_clave,texto = texto_list)
         print('\n'.join(texto_list))
         print('\n')
     print('\n')
     # print(ld)
-
+lista_dic[-1]
 
 # if n == 3:
 #     for i,ld in enumerate(lista_dic[::-1]):
