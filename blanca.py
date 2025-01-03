@@ -211,9 +211,23 @@ class ordenar_directorio:
     
 
 def informacion_ruta(ruta):
-    carpeta = '/'.join(ruta.split('/')[:-1])
-    nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
-    extension = os.path.basename(ruta).split('.')[-1]
+    ruta_split_bar = ruta.split('/')
+    if len(ruta_split_bar) == 1:
+        carpeta = ruta.split('/')[0]
+    else:
+        carpeta = '/'.join(ruta.split('/')[:-1])
+    if os.path.isdir(ruta):
+        if len(os.path.basename(ruta).split('.')) == 1:
+            nombre = os.path.basename(ruta)
+        else:
+            nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
+        extension = ''
+    if os.path.isfile(ruta):
+        nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
+        extension = os.path.basename(ruta).split('.')[-1]
+    if not os.path.isfile(ruta) and not os.path.isdir(ruta):
+        nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
+        extension = os.path.basename(ruta).split('.')[-1]
     return carpeta,nombre,extension.lower()
 # --------------------------------------------------------
 
@@ -532,7 +546,7 @@ def excel_to_csv(ruta):
         for nombre_hoja, dataframe in tablas.items():
             nombre_hoja = nombre_hoja.replace(' ','_').replace('-','_')
             if [i for i in dataframe.columns] != [] and [i for i in dataframe.values] != []:
-                print([i for i in dataframe.columns])
+                # print([i for i in dataframe.columns])
                 passar_str_num(tabla = dataframe).to_csv(new_ruta_carpeta + '/' + str(n) + '_' + nombre_hoja + '.csv',index = False)
             n += 1
 
@@ -553,7 +567,7 @@ def corregir_ruta(ruta, palabra_clave = 'Carpeta_latex'):
     return ruta
 
 def corregir_nombre(nombre):
-    # print(nombre)
+    # print([nombre])
     for nm in nombre:
         for car in ' \t-_':
             if nm == car:
@@ -570,8 +584,9 @@ def corregir_nombre(nombre):
         return nombre
 
 def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpeta_latex'):
-    nombre = '.'.join(os.path.basename(ruta_img).split('.')[:-1])
-    new_ruta = '/'.join(ruta_img.split('/')[:-1])
+    # nombre = '.'.join(os.path.basename(ruta_img).split('.')[:-1])
+    # new_ruta = '/'.join(ruta_img.split('/')[:-1])
+    new_ruta, nombre, _ = informacion_ruta(ruta_img)
     nombre_label = nombre.replace(' ','_').replace('-','_')
     nombre_cap = nombre_label.replace('_',' ')
     texto = ''
@@ -583,7 +598,7 @@ def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpe
     texto += '\\end{figure}\n'
     escribir_doc(ruta_archivo = ruta_carp_tex + '/' + nombre_label + '_img.tex', texto = texto)
 
-    return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
+    return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex, palabra_clave = palabra_clave) + '/' + nombre_label + '_img}'
 
 def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = True, tipo = 'input', palabra_clave = 'Carpeta_latex'):
     # print(ruta)
@@ -606,7 +621,7 @@ def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = T
 \t\t\\hline\n\t\t'''
 
 
-    texto_tabla += ' & '.join(['\\textbf{' + i + '}}' for i in columnas])
+    texto_tabla += ' & '.join(['\\textbf{' + i + '}' for i in columnas])
 
     texto_tabla += '\n\t\t\\\\ \\hline\n'
 
@@ -664,6 +679,7 @@ def comandos_latex(ruta_carpeta):
 \\usepackage{vmargin}
 \\usepackage{ragged2e}
 \\usepackage{array}
+\\usepackage{enumitem}
 \\usepackage{lipsum} % Para generar texto de ejemplo
 \\setpapersize{A4}
 \\setmargins{2.2cm}          % marge esquerre
@@ -681,6 +697,7 @@ def comandos_latex(ruta_carpeta):
 \\addto\\captionsspanish{\\renewcommand{\\tablename}{Tabla}}'''
     with open(ruta_carpeta + '/' + 'comandos.tex', 'w', encoding='utf-8') as archivo:
         archivo.write(texto)
+
 
 def crear_include_or_input(ruta, texto='', posicion = '', ruta_carpeta = '', tipo = 'input'):
     if type(texto) == list:
@@ -706,10 +723,26 @@ def crear_include_or_input(ruta, texto='', posicion = '', ruta_carpeta = '', tip
     return '\\' + tipo + '{' + texto_include + '}'
 
 
-def crear_main_latex(ruta_carpeta,texto_medio, left = '', center = '', right = '\\today'):
+def crear_main_latex_article(ruta_carpeta,texto_medio, left = '', center = '', right = '\\today'):
     if type(texto_medio) == list:
         texto_medio = '\n'.join(texto_medio)
     texto = '\\documentclass{article}\n'
+    texto += '\\include{comandos}\n'
+    texto += '\\fancyhead[L]{'+ left +'}\n'
+    texto += '\\fancyhead[C]{'+ center +'}\n'
+    texto += '\\fancyhead[R]{'+ right +'}\n'
+    texto += '\\fancyfoot[C]{\\thepage}\n'
+    texto += '\\begin{document}\n'
+    texto += '\\pagestyle{fancy}\n\n'
+    texto += texto_medio
+    texto += '\n\\end{document}'
+    with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
+        archivo.write(texto)
+
+def crear_main_latex_book(ruta_carpeta,texto_medio, left = '', center = '', right = '\\today'):
+    if type(texto_medio) == list:
+        texto_medio = '\n'.join(texto_medio)
+    texto = '\\documentclass{book}\n'
     texto += '\\include{comandos}\n'
     texto += '\\fancyhead[L]{'+ left +'}\n'
     texto += '\\fancyhead[C]{'+ center +'}\n'
@@ -821,6 +854,10 @@ cifras_sig = 3
 separador_decimales = '.'
 cient = False
 palabra_clave = 'latex'
+left = ''
+center = ''
+right = '\\today'
+
 
 if str.endswith(ruta_ini,'/'):
     ruta_ini = ruta_ini[:-1]
@@ -866,12 +903,13 @@ for i,ld in enumerate(lista_dic):
         texto_list = []
         # print(clave)
         for val in valor:
+            _,val_nom,_ = informacion_ruta(val)
             if i < 3:
-                texto_list.append('\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' ')) + '}')
-                print(i * '\t' + '\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' ')) + '}')
+                texto_list.append('\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' ')) + '}')
+                print(i * '\t' + '\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' ')) + '}')
             else:
-                texto_list.append('\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
-                print(i * '\t' + '\\' + 'capitulo{' + corregir_nombre(os.path.basename(val).replace('_',' ').replace('-',' '))+ '}')
+                texto_list.append('\\' + 'chapter{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' '))+ '}')
+                print(i * '\t' + '\\' + 'chapter{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' '))+ '}')
             new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
             print(val)
             if os.path.isfile(val):
@@ -883,7 +921,7 @@ for i,ld in enumerate(lista_dic):
                 else:
                     pass
             if os.path.isdir(val):
-                texto_list.append('\\include{' + corregir_ruta(ruta = new_val + '/' + os.path.basename(new_val) + '_branch', palabra_clave =palabra_clave)+'}')
+                texto_list.append('\\input{' + corregir_ruta(ruta = new_val + '/' + os.path.basename(new_val) + '_branch', palabra_clave =palabra_clave)+'}')
                 
                 
                 # new_val = '/'.join(new_val.split('/')[:-1]) + '/' + os.path.basename(new_val)
@@ -893,15 +931,19 @@ for i,ld in enumerate(lista_dic):
         if i<len(lista_dic) -1:
             new_clave = clave.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
             ruta_new_clave = new_clave + '/' + os.path.basename(new_clave) + '_branch.tex'
+            escribir_doc(ruta_archivo = ruta_new_clave,texto = texto_list)
         else:
             new_clave = clave.replace('/' + titulo_1 , '/' + titulo_1 + '_' + palabra_clave )
             ruta_new_clave = new_clave + '/' + 'main.tex'
-        escribir_doc(ruta_archivo = ruta_new_clave,texto = texto_list)
+            if len(lista_dic) < 3:
+                crear_main_latex_article(ruta_carpeta = new_clave,texto_medio = texto_list, left = left, center = center, right = right)
+            else:
+                crear_main_latex_book(ruta_carpeta = new_clave,texto_medio = texto_list, left = left, center = center, right = right)
+            comandos_latex(ruta_carpeta = new_clave)
         print('\n'.join(texto_list))
         print('\n')
     print('\n')
     # print(ld)
-lista_dic[-1]
 
 # if n == 3:
 #     for i,ld in enumerate(lista_dic[::-1]):
