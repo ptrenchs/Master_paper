@@ -881,7 +881,7 @@ while True:
     sub_lista = []
     for ruta in rutas:
         carp = Directorio.carpetas(ruta=ruta)
-        arch = Filtros_formato(Directorio.archivos(ruta=ruta),'csv,tex').elejir()
+        arch = Filtros_formato(Directorio.archivos(ruta=ruta),'csv,tex,png,jpg').elejir()
         all_ = Directorio.ordenar_lista_num(arch + carp)
         sub_lista.append(all_)
         all_sub += all_
@@ -903,13 +903,14 @@ for i,ld in enumerate(lista_dic):
         texto_list = []
         # print(clave)
         for val in valor:
-            _,val_nom,_ = informacion_ruta(val)
-            if i < 3:
-                texto_list.append('\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' ')) + '}')
-                print(i * '\t' + '\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' ')) + '}')
-            else:
-                texto_list.append('\\' + 'chapter{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' '))+ '}')
-                print(i * '\t' + '\\' + 'chapter{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' '))+ '}')
+            c_val_,val_nom,_ = informacion_ruta(val)
+            if 'img' not in val_nom:
+                if i < 3:
+                    texto_list.append('\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' ')) + '}')
+                    print(i * '\t' + '\\' + (n - i -1) * 'sub' + 'section{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' ')) + '}')
+                else:
+                    texto_list.append('\\' + 'chapter{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' '))+ '}')
+                    print(i * '\t' + '\\' + 'chapter{' + corregir_nombre(val_nom.replace('_',' ').replace('-',' '))+ '}')
             new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
             print(val)
             if os.path.isfile(val):
@@ -919,7 +920,17 @@ for i,ld in enumerate(lista_dic):
                     _,lista_inputs = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, palabra_clave = palabra_clave)
                     texto_list.append(lista_inputs)
                 else:
-                    pass
+                    if forma_ in 'png,jpg':
+                        carp_n,_,_ = informacion_ruta(ruta=new_val)
+                        new_val_carp = crear_carpeta(carp_n + '/Carpeta_img')
+                        # carp_n, _, _ = informacion_ruta(ruta=new_val_carp)
+                        new_val = new_val_carp + '/' + os.path.basename(val)
+                        shutil.copy2(val, new_val)
+                        texto_list.append(figure_latex(ruta_img = new_val, ruta_carp_tex = carp_n,palabra_clave = palabra_clave))
+                    else:
+                        new_val_carp,_,_ = informacion_ruta(ruta=new_val)
+                        crear_carpeta(new_val_carp)
+                        shutil.copy2(val, new_val)
             if os.path.isdir(val):
                 texto_list.append('\\input{' + corregir_ruta(ruta = new_val + '/' + os.path.basename(new_val) + '_branch', palabra_clave =palabra_clave)+'}')
                 
