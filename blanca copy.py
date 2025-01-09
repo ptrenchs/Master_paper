@@ -596,16 +596,19 @@ def figure_latex(ruta_img, ruta_carp_tex, tipo = 'input', palabra_clave = 'Carpe
     texto += '\t\\caption{' + corregir_nombre(nombre_cap) + '}\n'
     texto += '\t\\label{fig:' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave).replace(' ','_').replace('-','_').replace('/','_') + '_' + nombre_label + '}\n'
     texto += '\\end{figure}\n'
-    escribir_doc(ruta_archivo = ruta_carp_tex + '/' + nombre_label + '_img.tex', texto = texto)
+    escribir_doc(ruta_archivo = ruta_carp_tex + '/Carpeta_figuras/' + nombre_label + '_img.tex', texto = texto)
 
-    return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex, palabra_clave = palabra_clave) + '/' + nombre_label + '_img}'
+    return '\\' + tipo + '{' + corregir_ruta(ruta = ruta_carp_tex + '/Carpeta_figuras', palabra_clave = palabra_clave) + '/' + nombre_label + '_img}'
 
 def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = True, tipo = 'input', palabra_clave = 'Carpeta_latex'):
     # print(ruta)
-    nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
-    new_ruta = '/'.join(ruta.split('/')[:-1])
+    new_ruta, nombre, _ = informacion_ruta(ruta)
     nombre_label = nombre.replace(' ','_').replace('-','_')
     nombre_cap = nombre_label.replace('_',' ')
+    # nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
+    # new_ruta = '/'.join(ruta.split('/')[:-1])
+    # nombre_label = nombre.replace(' ','_').replace('-','_')
+    # nombre_cap = nombre_label.replace('_',' ')
     # print(tabla)
     tab = acondicionar_tabla(tabla, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient)
     columnas, datos = tab.columns, tab.values
@@ -634,9 +637,9 @@ def tabla2latex(tabla, ruta, cifras_sig = 3, separador_decimales = '.',cient = T
 
 
 
-    escribir_doc(ruta_archivo = new_ruta + '/' + nombre_label + '.tex', texto = texto_tabla)
+    escribir_doc(ruta_archivo = new_ruta + '/Carpeta_tablas/' + nombre_label + '.tex', texto = texto_tabla)
 
-    return '\\' + tipo + '{' + corregir_ruta(ruta = new_ruta, palabra_clave = palabra_clave) + '/' + nombre_label + '}'
+    return '\\' + tipo + '{' + corregir_ruta(ruta = new_ruta + '/Carpeta_tablas', palabra_clave = palabra_clave) + '/' + nombre_label + '}'
 
 
 def crear_carpeta(nombre_carpeta = '',ruta = ''):
@@ -752,8 +755,9 @@ def crear_main_latex_book(ruta_carpeta,texto_medio, left = '', center = '', righ
     texto += '\\pagestyle{fancy}\n\n'
     texto += texto_medio
     texto += '\n\\end{document}'
-    with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
-        archivo.write(texto)
+    escribir_doc(ruta_archivo = ruta_carpeta + '/' + 'main.tex',texto = texto)
+    # with open(ruta_carpeta + '/' + 'main.tex', 'w', encoding='utf-8') as archivo:
+    #     archivo.write(texto)
 
 
 def grubbs_test(lista, alpha=0.05):
@@ -847,8 +851,8 @@ def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador
 
 
 # ruta = "/home/pol-trenchs/Escritorio/Trabajo/3_Resultados/1_Popiedades_fisicomecanicas/1_Inicial_y_refino/3_Refino_5000.csv"
-# ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
-ruta_ini = "/home/ptrenchs/Escritorio/Trabajo"
+ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
+# ruta_ini = "/home/ptrenchs/Escritorio/Trabajo"
 confianza = 95
 cifras_sig = 3
 separador_decimales = '.'
@@ -900,24 +904,85 @@ new_carpeta = os.path.basename(ruta_ini)
 new_text = []
 
 for i,ld in enumerate(lista_dic):
+        
+
     for clave, valor in ld.items():
-        for val in valor:
-            ruta_carp,nombre,formto = informacion_ruta(val)
-            if 2 < len(lista_dic):
-                if i == 0:
-                    print(i*'\t' + 'crar main')
-                    print(i*'\t' + '\\chepter{' + nombre + '}')
-                else:
-                    print(i*'\t' + 'crear branch {nombre_carp}')
-                    print(i*'\t' + '\\' + (i-1) * 'sub' + 'section{' + nombre + '}')
+        texto_list = []
+        ruta_capr_clave, nombre_calve,formato_clave = informacion_ruta(ruta=clave)
+        print(5*20*'-')
+        if i == 0:            
+            print(i*'\t' + 'crar main')
+            print(f'titulo {nombre_calve}')
+        else:
+            print(i*'\t' + f'crear branch {nombre_calve}')
+            if 3 <= len(lista_dic):
+                n = i
             else:
-                if i == 0:
-                    print(i*'\t' + 'crar main')
-                else:
-                    print(i*'\t' + 'crear branch {nombre_carp}')
-                print(i*'\t' + '\\' + (i) * 'sub' + 'section{' + nombre + '}')
+                n = i + 1
+            if n == 1:
+                print(i*'\t' + '\\chepter{' + nombre_calve + '}')
+                texto_list.append(('\\' + 'chapter{' + corregir_nombre(nombre_calve.replace('_',' ').replace('-',' '))+ '}'))
+            else:
+                if n <= 3:
+                    print(i*'\t' + '\\' + (n-2) * 'sub' + 'section{' + nombre_calve + '}')
+                    texto_list.append('\\' + (n-2) * 'sub' + 'section{' + corregir_nombre(nombre_calve.replace('_',' ').replace('-',' ')) + '}')
             
-            print(i*'\t' + '\\input{' + nombre + '_branch}')
+                
+
+
+
+        for val in valor:
+            ruta_carp_val,nombre_val,formato_val = informacion_ruta(val)
+            new_val = val.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
+            ruta_carp_new_val,nombre_new_val,formato_new_val = informacion_ruta(new_val)
+            if os.path.isdir(val):
+                print(i*'\t' + '\\input{' + nombre_val + '_branch}')
+                print(i*'\t' + '\\input{' + nombre_val + '}')
+                texto_list.append('\\input{' + corregir_ruta(ruta = new_val + '/' + os.path.basename(new_val) + '_branch', palabra_clave =palabra_clave)+'}')
+            if os.path.isfile(val):
+                if n+1 <= 4:
+                    print(i*'\t' + '\\' + (n-1) * 'sub' + 'section{' + nombre_val + '}')
+                    texto_list.append('\\' + (n-1) * 'sub' + 'section{' + corregir_nombre(nombre_val.replace('_',' ').replace('-',' ')) + '}')
+                new_format = 'txt'
+                if 'csv' in formato_val.lower():
+                    _, inputs_ = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, palabra_clave = palabra_clave)
+                    texto_list.append(inputs_)
+                elif 'txt' in formato_val.lower():
+                    pass
+                else:
+                    carp_n,_,_ = informacion_ruta(ruta=new_val)
+                    new_val_carp = crear_carpeta(carp_n + '/Carpeta_img')
+                    # carp_n, _, _ = informacion_ruta(ruta=new_val_carp)
+                    new_val = new_val_carp + '/' + os.path.basename(val)
+                    shutil.copy2(val, new_val)
+                    texto_list.append(figure_latex(ruta_img = new_val, ruta_carp_tex = carp_n,palabra_clave = palabra_clave))
+                
+                print(i*'\t' + '\\input{' + nombre_val + '}')
+                # texto_list.append('\\input{' + corregir_ruta(ruta = ruta_carp_new_val + '/' + nombre_new_val, palabra_clave =palabra_clave)+'}')
+            
+            # if formato_val.lower() == 'csv':
+
+
+
+
+        if i == 0:
+            new_clave = clave.replace('/' + titulo_1 , '/' + titulo_1 + '_' + palabra_clave )
+            ruta_new_clave = new_clave + '/' + 'main.tex'
+            if len(lista_dic) < 3:
+                crear_main_latex_article(ruta_carpeta = new_clave,texto_medio = texto_list, left = left, center = center, right = right)
+            else:
+                crear_main_latex_book(ruta_carpeta = new_clave,texto_medio = texto_list, left = left, center = center, right = right)
+            comandos_latex(ruta_carpeta = new_clave)
+            print(i*'\t' + 'fin main')
+            # print('titulo {nombre_calve}')
+        else:
+            new_clave = clave.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
+            ruta_new_clave = new_clave + '/' + os.path.basename(new_clave) + '_branch.tex'
+            escribir_doc(ruta_archivo = ruta_new_clave,texto = texto_list)
+            print(i*'\t' + f'fin branch {nombre_calve}')
+        print(5*20*'-')
+        
+
 
 
 
