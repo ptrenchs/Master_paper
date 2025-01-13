@@ -910,10 +910,12 @@ for i,ld in enumerate(lista_dic):
         texto_list = []
         ruta_capr_clave, nombre_calve,formato_clave = informacion_ruta(ruta=clave)
         print(5*20*'-')
-        if i == 0:            
+        if i == 0:
+            new_clave = clave.replace('/' + titulo_1 , '/' + titulo_1 + '_' + palabra_clave )       
             print(i*'\t' + 'crar main')
             print(f'titulo {nombre_calve}')
         else:
+            new_clave = clave.replace('/' + titulo_1 + '/', '/' + titulo_1 + '_' + palabra_clave + '/')
             print(i*'\t' + f'crear branch {nombre_calve}')
             if 3 <= len(lista_dic):
                 n = i
@@ -921,11 +923,11 @@ for i,ld in enumerate(lista_dic):
                 n = i + 1
             if n == 1:
                 print(i*'\t' + '\\chepter{' + nombre_calve + '}')
-                texto_list.append(('\\' + 'chapter{' + corregir_nombre(nombre_calve.replace('_',' ').replace('-',' '))+ '}'))
+                texto_list.append('\\' + 'chapter{' + corregir_nombre(nombre_calve.replace('_',' ').replace('-',' '))+ '}' + ' \\label{chapter:' + corregir_ruta(ruta = new_clave, palabra_clave = palabra_clave).replace(' ','_').replace('-','_').replace('/','_') + '}')
             else:
                 if n <= 3:
                     print(i*'\t' + '\\' + (n-2) * 'sub' + 'section{' + nombre_calve + '}')
-                    texto_list.append('\\' + (n-2) * 'sub' + 'section{' + corregir_nombre(nombre_calve.replace('_',' ').replace('-',' ')) + '}')
+                    texto_list.append('\\' + (n-2) * 'sub' + 'section{' + corregir_nombre(nombre_calve.replace('_',' ').replace('-',' ')) + '}' + ' \\label{' + (n-2) * 'sub' + 'sec:' + corregir_ruta(ruta = new_clave, palabra_clave = palabra_clave).replace(' ','_').replace('-','_').replace('/','_') + '}')
             
                 
 
@@ -942,7 +944,7 @@ for i,ld in enumerate(lista_dic):
             if os.path.isfile(val):
                 if n+1 <= 4:
                     print(i*'\t' + '\\' + (n-1) * 'sub' + 'section{' + nombre_val + '}')
-                    texto_list.append('\\' + (n-1) * 'sub' + 'section{' + corregir_nombre(nombre_val.replace('_',' ').replace('-',' ')) + '}')
+                    texto_list.append('\\' + (n-1) * 'sub' + 'section{' + corregir_nombre(nombre_val.replace('_',' ').replace('-',' ')) + '}' + ' \\label{' + (n-1) * 'sub' + 'sec:' + corregir_ruta(ruta = ruta_carp_new_val + '/' + nombre_new_val, palabra_clave = palabra_clave).replace(' ','_').replace('-','_').replace('/','_') + '}')
                 new_format = 'txt'
                 if 'csv' in formato_val.lower():
                     _, inputs_ = estadisticos_y_grubbs(tabla = pd.read_csv(val), ruta = new_val, confianza = confianza, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, palabra_clave = palabra_clave)
