@@ -457,21 +457,35 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
     # display(tabla)
     columnas, datos = tabla.columns, acondicionar_tabla(tabla.values, cifras_sig, separador_decimales)
 
+#     texto_tabla = '''
+# \\begin{table}[H]
+# \t\\centering
+#     '''
+#     texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}'for i in columnas])+'|}'
+
+#     texto_tabla += '''
+# \t\t\\hline\n\t\t'''
+#     col = []
+#     for i in columnas:
+#         col.append('\\multicolumn{1}{|m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}|}{\\textbf{'+ i +r'}}')
+
+#     texto_tabla += ' & '.join(col)
+
+#     texto_tabla += '\n\t\t\\\\ \\hline\n'
     texto_tabla = '''
 \\begin{table}[H]
 \t\\centering
     '''
-    texto_tabla += '\t\\begin{tabular}{|'+'|'.join(['m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}'for i in columnas])+'|}'
+    texto_tabla += '\t\\begin{tabularx}{\\textwidth}{|'+'|'.join(['X'for i in columnas])+'|}'
 
     texto_tabla += '''
 \t\t\\hline\n\t\t'''
-    col = []
-    for i in columnas:
-        col.append('\\multicolumn{1}{|m{'+str(round(float(0.9 * 1/len(columnas)),2))[:5]+'\\textwidth}|}{\\textbf{'+ i +r'}}')
 
-    texto_tabla += ' & '.join(col)
+
+    texto_tabla += ' & '.join(['\\textbf{' + i + '}' for i in columnas])
 
     texto_tabla += '\n\t\t\\\\ \\hline\n'
+
 
     fila_def = ''
     for i in datos:
