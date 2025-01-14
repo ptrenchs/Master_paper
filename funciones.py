@@ -492,7 +492,7 @@ def tabla2latex(tabla, nombre_cap = 'tabla 1', cifras_sig = 3, separador_decimal
         fila = [str(j) for j in i]
         fila_def += '\t\t'+' & '.join(fila) + ' \\\\ \\hline\n'
     texto_tabla += fila_def
-    texto_tabla += '\t\\end{tabular}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','_').replace('-','_').replace('\t','_') + '}\n\\end{table}\n\n\n'
+    texto_tabla += '\t\\end{tabularx}\n\t\\caption{' + nombre_cap + '}\n\t\\label{tab:' + nombre_cap.replace(' ','_').replace('-','_').replace('\t','_') + '}\n\\end{table}\n\n\n'
 
 
     return texto_tabla
