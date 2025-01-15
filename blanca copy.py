@@ -30,10 +30,11 @@ class  Directorio:
                 else:
                     nombre_carp = lso.replace(' ','_').replace('-','_')
                 if nombre_carp.split('_')[0] == orde or nombre_carp.split('_')[-1] == orde:
-                    # print(lista)
-                    # print(lso)
-                    lista_ordenada.append(lso)
-                    lista_no_ordenada.remove(lso)
+                    try:
+                        lista_no_ordenada.remove(lso)
+                        lista_ordenada.append(lso)
+                    except:
+                        pass
         return lista_ordenada + lista_no_ordenada
 
     def archivos(ruta):
@@ -252,6 +253,7 @@ def trans(tabla_original):
     
 
 def schopper_corr(tabla,ruta,palabra_clave = 'Carpeta_latex'):
+    print(ruta)
     x_masa = 2
     nombre = '.'.join(os.path.basename(ruta).split('.')[:-1])
     nombre_spe = nombre.replace('_',' ').replace('-',' ')
@@ -314,6 +316,7 @@ def schopper_corr(tabla,ruta,palabra_clave = 'Carpeta_latex'):
         else:
             new_reg_min = [new_reg[i] for i in range(len(new_reg))]
             dist_1 = [np.polyval(coef,x) - y for coef in new_reg_min]
+            print([abs(i) for i in dist_1])
             pos_min = [abs(i) for i in dist_1].index(min(np.abs(dist_1)))
             y_min = np.polyval(new_reg_min[pos_min],x)
             new_reg_max = [new_reg[i] for i in range(len(new_reg)) if i != pos_min]
@@ -847,12 +850,13 @@ def estadisticos_y_grubbs(tabla, ruta, confianza = 95, cifras_sig = 3, separador
         list_inputs.append(tabla2latex(tabla = tabla_def, ruta = new_ruta, cifras_sig = cifras_sig, separador_decimales = separador_decimales, cient = cient, tipo = 'input',palabra_clave = palabra_clave))
         return pd.DataFrame(dict(zip(col,trans(trans(datos) + [medias, std, max_, min_, media_mas_menos, intervalo])))), '\n'.join(list_inputs)
     else:
-        return tabla,''
+        return tabla,'\n'.join(list_inputs)
 
 
 # ruta = "/home/pol-trenchs/Escritorio/Trabajo/3_Resultados/1_Popiedades_fisicomecanicas/1_Inicial_y_refino/3_Refino_5000.csv"
-ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
+# ruta_ini = "/home/pol-trenchs/Escritorio/Trabajo/"
 # ruta_ini = "/home/ptrenchs/Escritorio/Trabajo"
+ruta_ini = "/home/ptrenchs/Descargas/Trabajo"
 confianza = 95
 cifras_sig = 3
 separador_decimales = '.'
@@ -885,7 +889,7 @@ while True:
     sub_lista = []
     for ruta in rutas:
         carp = Directorio.carpetas(ruta=ruta)
-        arch = Filtros_formato(Directorio.archivos(ruta=ruta),'csv,tex,png,jpg').elejir()
+        arch = Filtros_formato(Directorio.archivos(ruta=ruta),'csv,png,jpg').elejir()
         all_ = Directorio.ordenar_lista_num(arch + carp)
         sub_lista.append(all_)
         all_sub += all_
